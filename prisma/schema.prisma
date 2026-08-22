@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../prisma/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String              @id @default(uuid()) @db.Uuid
+  email              String              @unique
+  passwordHash       String
+  role               UserRole            @default(PARTICIPANT)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  deletedAt          DateTime?
+  participantProfile ParticipantProfile?
+
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model ParticipantProfile {
+  id                String             @id @default(uuid()) @db.Uuid
+  userId            String             @unique @db.Uuid
+  name              String
+  school            String
+  major             String?
+  class             String?
+  phone             String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  eventParticipants EventParticipant[]
+  user              User               @relation(fields: [userId], references: [id])
+
+  @@index([deletedAt])
+  @@map("participant_profiles")
+}
+
+model Event {
+  id   String @id @default(uuid()) @db.Uuid
+  name String
+  slug String @unique
+
+  startAt DateTime
+  endAt   DateTime
+
+  isActive Boolean @default(true)
+
+  scannerToken String @unique
+
+  eventParticipants EventParticipant[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("events")
+}
+
+model EventParticipant {
+  id              String             @id @default(uuid()) @db.Uuid
+  eventId         String             @db.Uuid
+  participantId   String             @db.Uuid
+  participantCode String
+  qrToken         String             @unique
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  deletedAt       DateTime?
+  attendanceLogs  AttendanceLog[]
+  event           Event              @relation(fields: [eventId], references: [id])
+  participant     ParticipantProfile @relation(fields: [participantId], references: [id])
+
+  @@unique([eventId, participantId])
+  @@unique([eventId, participantCode])
+  @@index([eventId])
+  @@index([participantId])
+  @@index([deletedAt])
+  @@map("event_participants")
+}
+
+model AttendanceLog {
+  id                 String           @id @default(uuid()) @db.Uuid
+  eventParticipantId String           @db.Uuid
+  type               AttendanceType
+  scannedAt          DateTime         @default(now())
+  eventParticipant   EventParticipant @relation(fields: [eventParticipantId], references: [id])
+
+  @@index([eventParticipantId])
+  @@index([eventParticipantId, type])
+  @@map("attendance_logs")
+}
+
+enum UserRole {
+  PARTICIPANT
+  ADMIN
+}
+
+enum AttendanceType {
+  CHECK_IN
+  CHECK_OUT
+}
