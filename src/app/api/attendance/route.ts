@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
-import type { AttendanceType } from "../../../../prisma/generated/enums";
+
+import {
+    Prisma,
+    type AttendanceType,
+} from "../../../../prisma/generated/client";
+
 import { prisma } from "@/lib/db/prisma";
 import { attendanceSchema } from "@/lib/validations/attendance";
+
+const MAX_TRANSACTION_RETRIES = 3;
 
 export async function POST(request: Request) {
     try {
@@ -23,15 +30,164 @@ export async function POST(request: Request) {
         const { scannerToken, qrToken } =
             validation.data;
 
-        const event = await prisma.event.findFirst({
-            where: {
-                scannerToken,
-                isActive: true,
-                deletedAt: null,
-            },
-        });
+        for (
+            let attempt = 1;
+            attempt <= MAX_TRANSACTION_RETRIES;
+            attempt++
+        ) {
+            try {
+                const result =
+                    await prisma.$transaction(
+                        async (tx) => {
+                            const event =
+                                await tx.event.findFirst({
+                                    where: {
+                                        scannerToken,
+                                        isActive: true,
+                                        deletedAt: null,
+                                    },
+                                });
 
-        if (!event) {
+                            if (!event) {
+                                throw new Error(
+                                    "SCANNER_NOT_FOUND",
+                                );
+                            }
+
+                            const now = new Date();
+
+                            if (now < event.startAt) {
+                                throw new Error(
+                                    "EVENT_NOT_STARTED",
+                                );
+                            }
+
+                            if (now > event.endAt) {
+                                throw new Error(
+                                    "EVENT_FINISHED",
+                                );
+                            }
+
+                            const eventParticipant =
+                                await tx.eventParticipant.findFirst(
+                                    {
+                                        where: {
+                                            eventId: event.id,
+                                            qrToken,
+                                            deletedAt: null,
+                                            participant: {
+                                                deletedAt: null,
+                                            },
+                                        },
+                                        include: {
+                                            participant: true,
+                                        },
+                                    },
+                                );
+
+                            if (!eventParticipant) {
+                                throw new Error(
+                                    "QR_NOT_FOUND",
+                                );
+                            }
+
+                            const lastAttendance =
+                                await tx.attendanceLog.findFirst(
+                                    {
+                                        where: {
+                                            eventParticipantId:
+                                                eventParticipant.id,
+                                        },
+                                        orderBy: {
+                                            scannedAt:
+                                                "desc",
+                                        },
+                                    },
+                                );
+
+                            let attendanceType: AttendanceType;
+
+                            if (!lastAttendance) {
+                                attendanceType =
+                                    "CHECK_IN";
+                            } else if (
+                                lastAttendance.type ===
+                                "CHECK_IN"
+                            ) {
+                                attendanceType =
+                                    "CHECK_OUT";
+                            } else {
+                                throw new Error(
+                                    "ALREADY_CHECKED_OUT",
+                                );
+                            }
+
+                            const attendance =
+                                await tx.attendanceLog.create(
+                                    {
+                                        data: {
+                                            eventParticipantId:
+                                                eventParticipant.id,
+                                            type: attendanceType,
+                                        },
+                                    },
+                                );
+
+                            return {
+                                attendance,
+                                participant: {
+                                    name: eventParticipant
+                                        .participant
+                                        .name,
+                                    participantCode:
+                                        eventParticipant
+                                            .participantCode,
+                                },
+                            };
+                        },
+                        {
+                            isolationLevel:
+                                Prisma.TransactionIsolationLevel.Serializable,
+                        },
+                    );
+
+                return NextResponse.json({
+                    success: true,
+                    message:
+                        result.attendance.type ===
+                            "CHECK_IN"
+                            ? "Check-in berhasil."
+                            : "Check-out berhasil.",
+                    data: {
+                        type: result.attendance.type,
+                        participant:
+                            result.participant,
+                        scannedAt:
+                            result.attendance.scannedAt,
+                    },
+                });
+            } catch (error) {
+                if (
+                    error instanceof
+                    Prisma.PrismaClientKnownRequestError &&
+                    error.code === "P2034" &&
+                    attempt < MAX_TRANSACTION_RETRIES
+                ) {
+                    continue;
+                }
+
+                throw error;
+            }
+        }
+
+        throw new Error(
+            "ATTENDANCE_TRANSACTION_FAILED",
+        );
+    } catch (error) {
+        if (
+            error instanceof Error &&
+            error.message === "SCANNER_NOT_FOUND"
+        ) {
             return NextResponse.json(
                 {
                     success: false,
@@ -41,19 +197,36 @@ export async function POST(request: Request) {
             );
         }
 
-        const eventParticipant =
-            await prisma.eventParticipant.findFirst({
-                where: {
-                    eventId: event.id,
-                    qrToken,
-                    deletedAt: null,
+        if (
+            error instanceof Error &&
+            error.message === "EVENT_NOT_STARTED"
+        ) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Event belum dimulai.",
                 },
-                include: {
-                    participant: true,
-                },
-            });
+                { status: 409 },
+            );
+        }
 
-        if (!eventParticipant) {
+        if (
+            error instanceof Error &&
+            error.message === "EVENT_FINISHED"
+        ) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "Event sudah selesai.",
+                },
+                { status: 409 },
+            );
+        }
+
+        if (
+            error instanceof Error &&
+            error.message === "QR_NOT_FOUND"
+        ) {
             return NextResponse.json(
                 {
                     success: false,
@@ -63,23 +236,10 @@ export async function POST(request: Request) {
             );
         }
 
-        const lastAttendance =
-            await prisma.attendanceLog.findFirst({
-                where: {
-                    eventParticipantId:
-                        eventParticipant.id,
-                },
-                orderBy: {
-                    scannedAt: "desc",
-                },
-            });
-        let attendanceType: AttendanceType;
-
-        if (!lastAttendance) {
-            attendanceType = "CHECK_IN";
-        } else if (lastAttendance.type === "CHECK_IN") {
-            attendanceType = "CHECK_OUT";
-        } else {
+        if (
+            error instanceof Error &&
+            error.message === "ALREADY_CHECKED_OUT"
+        ) {
             return NextResponse.json(
                 {
                     success: false,
@@ -90,33 +250,6 @@ export async function POST(request: Request) {
             );
         }
 
-        const attendance =
-            await prisma.attendanceLog.create({
-                data: {
-                    eventParticipantId:
-                        eventParticipant.id,
-                    type: attendanceType,
-                },
-            });
-
-        return NextResponse.json({
-            success: true,
-            message:
-                attendanceType === "CHECK_IN"
-                    ? "Check-in berhasil."
-                    : "Check-out berhasil.",
-            data: {
-                type: attendance.type,
-                participant: {
-                    name: eventParticipant.participant.name,
-                    participantCode:
-                        eventParticipant.participantCode,
-                },
-                scannedAt:
-                    attendance.scannedAt,
-            },
-        });
-    } catch (error) {
         console.error(
             "Attendance API error:",
             error,

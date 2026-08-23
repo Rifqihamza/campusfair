@@ -30,6 +30,7 @@ export async function createEvent(
 
     const {
         name,
+        description,
         startAt,
         endAt,
     } = validation.data;
@@ -39,6 +40,7 @@ export async function createEvent(
     await prisma.event.create({
         data: {
             name,
+            description: description || null,
             slug,
             startAt: new Date(startAt),
             endAt: new Date(endAt),
@@ -66,6 +68,7 @@ export async function updateEvent(
 
     const rawData = {
         name: formData.get("name"),
+        description: formData.get("description"),
         startAt: formData.get("startAt"),
         endAt: formData.get("endAt"),
     };
@@ -81,6 +84,7 @@ export async function updateEvent(
 
     const {
         name,
+        description,
         startAt,
         endAt,
     } = validation.data;
@@ -91,6 +95,7 @@ export async function updateEvent(
         },
         data: {
             name,
+            description: description || null,
             startAt: new Date(startAt),
             endAt: new Date(endAt),
             isActive,

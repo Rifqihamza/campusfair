@@ -1,17 +1,20 @@
 import crypto from "node:crypto";
 
+import { Prisma } from "../../prisma/generated/client";
+
 import { prisma } from "@/lib/db/prisma";
 
 export async function registerParticipantToEvent(
     userId: string,
     eventId: string,
 ) {
-    const participant = await prisma.participantProfile.findFirst({
-        where: {
-            userId,
-            deletedAt: null,
-        },
-    });
+    const participant =
+        await prisma.participantProfile.findFirst({
+            where: {
+                userId,
+                deletedAt: null,
+            },
+        });
 
     if (!participant) {
         throw new Error("PARTICIPANT_NOT_FOUND");
@@ -29,6 +32,12 @@ export async function registerParticipantToEvent(
         throw new Error("EVENT_NOT_FOUND");
     }
 
+    const now = new Date();
+
+    if (now > event.endAt) {
+        throw new Error("EVENT_ALREADY_FINISHED");
+    }
+
     const existingParticipant =
         await prisma.eventParticipant.findFirst({
             where: {
@@ -42,34 +51,90 @@ export async function registerParticipantToEvent(
         return existingParticipant;
     }
 
-    const participantCode = await generateParticipantCode(
-        event.startAt,
-    );
+    const participantCode =
+        await generateParticipantCode(
+            event.id,
+            event.startAt,
+        );
 
-    const qrToken = crypto.randomBytes(32).toString("hex");
+    const qrToken =
+        crypto.randomBytes(32).toString("hex");
 
-    return prisma.eventParticipant.create({
-        data: {
-            eventId,
-            participantId: participant.id,
-            participantCode,
-            qrToken,
-        },
-    });
+    try {
+        return await prisma.eventParticipant.create({
+            data: {
+                eventId: event.id,
+                participantId: participant.id,
+                participantCode,
+                qrToken,
+            },
+        });
+    } catch (error) {
+        if (
+            error instanceof
+            Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+        ) {
+            const existingParticipant =
+                await prisma.eventParticipant.findFirst({
+                    where: {
+                        eventId: event.id,
+                        participantId:
+                            participant.id,
+                        deletedAt: null,
+                    },
+                });
+
+            if (existingParticipant) {
+                return existingParticipant;
+            }
+        }
+
+        throw error;
+    }
 }
 
 async function generateParticipantCode(
+    eventId: string,
     eventStartAt: Date,
 ): Promise<string> {
     const year = eventStartAt.getFullYear();
 
-    const count = await prisma.eventParticipant.count({
-        where: {
-            deletedAt: null,
-        },
-    });
+    const participants =
+        await prisma.eventParticipant.findMany({
+            where: {
+                eventId,
+            },
+            select: {
+                participantCode: true,
+            },
+        });
 
-    const sequence = String(count + 1).padStart(4, "0");
+    let maxSequence = 0;
 
-    return `CF-${year}-${sequence}`;
+    for (const participant of participants) {
+        const match =
+            participant.participantCode.match(
+                /^CF-\d{4}-(\d+)$/,
+            );
+
+        if (!match) {
+            continue;
+        }
+
+        const sequence = Number(match[1]);
+
+        if (
+            Number.isInteger(sequence) &&
+            sequence > maxSequence
+        ) {
+            maxSequence = sequence;
+        }
+    }
+
+    const nextSequence = String(
+        maxSequence + 1,
+    ).padStart(4, "0");
+
+    return `CF-${year}-${nextSequence}`;
 }

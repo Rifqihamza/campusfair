@@ -20,7 +20,7 @@ export default async function AttendancePage({
     }
 
     if (!isAdmin(session.user.role)) {
-        redirect("/dashboard");
+        redirect("/participant");
     }
 
     const { eventId } = await params;
@@ -41,11 +41,12 @@ export default async function AttendancePage({
             where: {
                 eventId,
                 deletedAt: null,
+                participant: {
+                    deletedAt: null,
+                },
             },
-
             include: {
                 participant: true,
-
                 attendanceLogs: {
                     orderBy: {
                         scannedAt: "desc",
@@ -53,7 +54,6 @@ export default async function AttendancePage({
                     take: 1,
                 },
             },
-
             orderBy: {
                 createdAt: "asc",
             },
@@ -75,6 +75,9 @@ export default async function AttendancePage({
                 eventParticipant: {
                     eventId,
                     deletedAt: null,
+                    participant: {
+                        deletedAt: null,
+                    },
                 },
             },
         });
@@ -87,9 +90,15 @@ export default async function AttendancePage({
                 eventParticipant: {
                     eventId,
                     deletedAt: null,
+                    participant: {
+                        deletedAt: null,
+                    },
                 },
             },
         });
+
+    const insideCount =
+        checkInCount - checkOutCount;
 
     return (
         <main className="min-h-screen p-8">
@@ -105,7 +114,7 @@ export default async function AttendancePage({
 
             </div>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="mt-8 grid gap-4 md:grid-cols-4">
 
                 <div className="rounded-xl border p-6">
                     <p className="text-sm text-gray-600">
@@ -136,6 +145,16 @@ export default async function AttendancePage({
 
                     <p className="mt-2 text-3xl font-bold">
                         {checkOutCount}
+                    </p>
+                </div>
+
+                <div className="rounded-xl border p-6">
+                    <p className="text-sm text-gray-600">
+                        Masih di Venue
+                    </p>
+
+                    <p className="mt-2 text-3xl font-bold">
+                        {insideCount}
                     </p>
                 </div>
 
@@ -172,35 +191,44 @@ export default async function AttendancePage({
                             const latest =
                                 item.attendanceLogs[0];
 
+                            let status = "BELUM HADIR";
+
+                            if (latest?.type === "CHECK_IN") {
+                                status = "DI VENUE";
+                            }
+
+                            if (latest?.type === "CHECK_OUT") {
+                                status = "SUDAH KELUAR";
+                            }
+
                             return (
                                 <tr
                                     key={item.id}
                                     className="border-b"
                                 >
-
                                     <td className="p-4">
                                         {item.participant.name}
                                     </td>
-
 
                                     <td className="p-4">
                                         {item.participant.school}
                                     </td>
 
-
                                     <td className="p-4">
-                                        {latest
-                                            ? latest.type
-                                            : "BELUM HADIR"}
+                                        {status}
                                     </td>
 
-
                                     <td className="p-4">
                                         {latest
-                                            ? latest.scannedAt.toLocaleString()
+                                            ? latest.scannedAt.toLocaleString(
+                                                "id-ID",
+                                                {
+                                                    dateStyle: "short",
+                                                    timeStyle: "medium",
+                                                },
+                                            )
                                             : "-"}
                                     </td>
-
                                 </tr>
                             );
                         })}

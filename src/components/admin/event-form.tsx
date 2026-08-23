@@ -23,6 +23,21 @@ export function EventForm() {
                 />
             </div>
 
+            <label
+                htmlFor="description"
+                className="block text-sm font-medium"
+            >
+                Deskripsi
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows={5}
+                placeholder="Jelaskan tentang event..."
+                className="mt-1 w-full rounded-lg border p-3"
+            />
+
             <div>
                 <label className="text-sm font-medium">
                     Mulai

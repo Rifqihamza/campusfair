@@ -106,6 +106,7 @@ export type ParticipantProfileScalarFieldEnum = (typeof ParticipantProfileScalar
 export const EventScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  description: 'description',
   slug: 'slug',
   startAt: 'startAt',
   endAt: 'endAt',

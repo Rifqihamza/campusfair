@@ -7,6 +7,11 @@ export const eventSchema = z
             .trim()
             .min(3, "Nama event minimal 3 karakter"),
 
+        description: z
+            .string()
+            .trim()
+            .optional(),
+
         startAt: z
             .string()
             .min(1, "Tanggal mulai wajib diisi"),

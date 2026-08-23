@@ -6,6 +6,7 @@ type Props = {
     event: {
         id: string;
         name: string;
+        description: string | null;
         startAt: Date;
         endAt: Date;
         isActive: boolean;
@@ -39,6 +40,21 @@ export function EditEventForm({
                 />
             </div>
 
+            <label
+                htmlFor="description"
+                className="block text-sm font-medium"
+            >
+                Deskripsi
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                rows={5}
+                defaultValue={event.description ?? ""}
+                placeholder="Jelaskan tentang event..."
+                className="mt-1 w-full rounded-lg border p-3"
+            />
 
             <div>
                 <label className="text-sm font-medium">

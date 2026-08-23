@@ -45,6 +45,7 @@ async function main() {
     const event = await prisma.event.create({
         data: {
             name: "Campus Fair",
+            description: "Acara Campus Fair yang di selenggarakan para alumni dari SMK Mitra Industri yang melanjutkan ke jenjang perkuliahan",
             slug: "campus-fair",
 
             startAt: new Date("2027-01-15T08:00:00+07:00"),

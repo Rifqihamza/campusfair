@@ -187,6 +187,7 @@ export type AttendanceLogOrderByWithRelationInput = {
 
 export type AttendanceLogWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  eventParticipantId_type?: Prisma.AttendanceLogEventParticipantIdTypeCompoundUniqueInput
   AND?: Prisma.AttendanceLogWhereInput | Prisma.AttendanceLogWhereInput[]
   OR?: Prisma.AttendanceLogWhereInput[]
   NOT?: Prisma.AttendanceLogWhereInput | Prisma.AttendanceLogWhereInput[]
@@ -194,7 +195,7 @@ export type AttendanceLogWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.EnumAttendanceTypeFilter<"AttendanceLog"> | $Enums.AttendanceType
   scannedAt?: Prisma.DateTimeFilter<"AttendanceLog"> | Date | string
   eventParticipant?: Prisma.XOR<Prisma.EventParticipantScalarRelationFilter, Prisma.EventParticipantWhereInput>
-}, "id">
+}, "id" | "eventParticipantId_type">
 
 export type AttendanceLogOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -272,6 +273,11 @@ export type AttendanceLogListRelationFilter = {
 
 export type AttendanceLogOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type AttendanceLogEventParticipantIdTypeCompoundUniqueInput = {
+  eventParticipantId: string
+  type: $Enums.AttendanceType
 }
 
 export type AttendanceLogCountOrderByAggregateInput = {

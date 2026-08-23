@@ -1,11 +1,10 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { EventRegistration } from "@/components/dashboard/event-registration";
-import { ParticipantQr } from "@/components/dashboard/participant-qr";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { auth } from "@/lib/auth/auth";
 import { prisma } from "@/lib/db/prisma";
-import { LogoutButton } from "@/components/auth/logout-button";
-
+import { isParticipant } from "@/lib/auth/permission";
 export default async function DashboardPage() {
     const session = await auth();
 
@@ -13,94 +12,156 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    const participant = await prisma.participantProfile.findFirst({
-        where: {
-            userId: session.user.id,
-            deletedAt: null,
-        },
-    });
+    if (!isParticipant(session.user.role)) {
+        redirect("/admin");
+    }
+
+    const participant =
+        await prisma.participantProfile.findFirst({
+            where: {
+                userId: session.user.id,
+                deletedAt: null,
+            },
+            select: {
+                id: true,
+                name: true,
+            },
+        });
 
     if (!participant) {
         return (
-            <main className="p-8">
-                <h1 className="text-2xl font-bold">
-                    Data peserta tidak ditemukan
-                </h1>
+            <main className="min-h-screen p-8">
+                <div className="mx-auto max-w-3xl">
+                    <h1 className="text-2xl font-bold">
+                        Data peserta tidak ditemukan
+                    </h1>
+                </div>
             </main>
         );
     }
 
-    const activeEvent = await prisma.event.findFirst({
-        where: {
-            isActive: true,
-            deletedAt: null,
-        },
-        orderBy: {
-            startAt: "asc",
-        },
-    });
-
-    const eventParticipant = activeEvent
-        ? await prisma.eventParticipant.findFirst({
+    const registrations =
+        await prisma.eventParticipant.findMany({
             where: {
-                eventId: activeEvent.id,
                 participantId: participant.id,
                 deletedAt: null,
+                event: {
+                    deletedAt: null,
+                },
             },
-        })
-        : null;
+            orderBy: {
+                createdAt: "desc",
+            },
+            include: {
+                event: {
+                    select: {
+                        id: true,
+                        name: true,
+                        description: true,
+                        startAt: true,
+                        endAt: true,
+                        isActive: true,
+                    },
+                },
+            },
+        });
 
     return (
         <main className="min-h-screen p-8">
             <div className="mx-auto max-w-3xl">
-                <h1 className="text-3xl font-bold">
-                    Dashboard
-                </h1>
-
                 <div className="flex items-center justify-between">
-                    <p className="mt-2 text-gray-600">
-                        Halo, {participant.name}!
-                    </p>
+                    <div>
+                        <h1 className="text-3xl font-bold">
+                            Dashboard
+                        </h1>
+
+                        <p className="mt-2 text-gray-600">
+                            Halo, {participant.name}!
+                        </p>
+                    </div>
+
                     <LogoutButton />
                 </div>
 
                 <div className="mt-8">
-                    {activeEvent && !eventParticipant && (
-                        <EventRegistration
-                            eventId={activeEvent.id}
-                            eventName={activeEvent.name}
-                        />
-                    )}
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold">
+                            Event Saya
+                        </h2>
 
-                    {activeEvent && eventParticipant && (
-                        <div className="space-y-6">
-                            <section className="rounded-xl border bg-white p-6 shadow-sm">
-                                <h2 className="text-lg font-semibold">
-                                    Kamu sudah terdaftar
-                                </h2>
+                        <Link
+                            href="/events"
+                            className="text-sm font-medium hover:underline"
+                        >
+                            Lihat semua event
+                        </Link>
+                    </div>
 
-                                <p className="mt-2 text-sm text-gray-600">
-                                    Kode peserta:
-                                </p>
-
-                                <p className="mt-1 font-mono font-semibold">
-                                    {eventParticipant.participantCode}
-                                </p>
-                            </section>
-
-                            <ParticipantQr
-                                value={eventParticipant.qrToken}
-                                participantCode={eventParticipant.participantCode}
-                            />
-                        </div>
-                    )}
-
-                    {!activeEvent && (
-                        <section className="rounded-xl border bg-white p-6 shadow-sm">
+                    {registrations.length === 0 ? (
+                        <section className="mt-4 rounded-xl border bg-white p-6 shadow-sm">
                             <p className="text-sm text-gray-600">
-                                Belum ada event yang sedang dibuka.
+                                Kamu belum terdaftar di event
+                                mana pun.
                             </p>
+
+                            <Link
+                                href="/events"
+                                className="mt-4 inline-flex rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+                            >
+                                Cari Event
+                            </Link>
                         </section>
+                    ) : (
+                        <div className="mt-4 space-y-4">
+                            {registrations.map(
+                                (registration) => (
+                                    <section
+                                        key={
+                                            registration.id
+                                        }
+                                        className="rounded-xl border bg-white p-6 shadow-sm"
+                                    >
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div>
+                                                <h3 className="text-lg font-semibold">
+                                                    {
+                                                        registration
+                                                            .event
+                                                            .name
+                                                    }
+                                                </h3>
+
+                                                <p className="mt-2 text-sm text-gray-600">
+                                                    {registration.event.startAt.toLocaleString(
+                                                        "id-ID",
+                                                    )}
+                                                </p>
+
+                                                <p className="text-sm text-gray-600">
+                                                    sampai{" "}
+                                                    {registration.event.endAt.toLocaleString(
+                                                        "id-ID",
+                                                    )}
+                                                </p>
+
+                                                <p className="mt-3 font-mono text-sm">
+                                                    {
+                                                        registration.participantCode
+                                                    }
+                                                </p>
+                                            </div>
+
+                                            <Link
+                                                href={`/events/${registration.event.id}`}
+                                                className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-gray-50"
+                                            >
+                                                Detail
+                                            </Link>
+                                        </div>
+                                    </section>
+                                ),
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

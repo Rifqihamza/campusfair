@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth/auth";
 import { isAdmin } from "@/lib/auth/permission";
+import { LogoutButton } from "@/components/auth/logout-button";
+import SharedButton from "@/components/shared/button";
 
 export default async function AdminPage() {
     const session = await auth();
@@ -19,15 +21,22 @@ export default async function AdminPage() {
     return (
         <main className="min-h-screen p-8">
             <div className="mx-auto max-w-6xl">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-row items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold">
                             Admin Dashboard
                         </h1>
 
                         <p className="mt-2 text-gray-600">
-                            Selamat datang, {session.user.email}
+                            Selamat datang, {session.user.name}
                         </p>
+                    </div>
+                    <div className="flex flex-row gap-4">
+                        <SharedButton
+                            title="Halaman Event"
+                            url="/admin/events"
+                        />
+                        <LogoutButton />
                     </div>
                 </div>
 

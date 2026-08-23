@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 
 import { QrScanner } from "@/components/scanner/qr-scanner";
 
@@ -32,6 +37,34 @@ export function ScannerPage({
     const [isProcessing, setIsProcessing] =
         useState(false);
 
+    const resultTimerRef =
+        useRef<ReturnType<typeof setTimeout> | null>(
+            null,
+        );
+
+    useEffect(() => {
+        return () => {
+            if (resultTimerRef.current) {
+                clearTimeout(
+                    resultTimerRef.current,
+                );
+            }
+        };
+    }, []);
+
+    const resetResult = useCallback(() => {
+        setResult(null);
+        setIsProcessing(false);
+
+        if (resultTimerRef.current) {
+            clearTimeout(
+                resultTimerRef.current,
+            );
+
+            resultTimerRef.current = null;
+        }
+    }, []);
+
     const handleScan = useCallback(
         async (qrToken: string) => {
             if (isProcessing) {
@@ -62,10 +95,13 @@ export function ScannerPage({
 
                 setResult(data);
 
-                setTimeout(() => {
-                    setResult(null);
-                    setIsProcessing(false);
-                }, 3000);
+                resultTimerRef.current =
+                    setTimeout(() => {
+                        setResult(null);
+                        setIsProcessing(false);
+                        resultTimerRef.current =
+                            null;
+                    }, 5000);
             } catch (error) {
                 console.error(
                     "Attendance request failed:",
@@ -78,18 +114,29 @@ export function ScannerPage({
                         "Tidak dapat terhubung ke server.",
                 });
 
-                setTimeout(() => {
-                    setResult(null);
-                    setIsProcessing(false);
-                }, 3000);
+                resultTimerRef.current =
+                    setTimeout(() => {
+                        setResult(null);
+                        setIsProcessing(false);
+                        resultTimerRef.current =
+                            null;
+                    }, 5000);
             }
         },
         [isProcessing, scannerToken],
     );
 
+    const isCheckIn =
+        result?.success &&
+        result.data?.type === "CHECK_IN";
+
+    const isCheckOut =
+        result?.success &&
+        result.data?.type === "CHECK_OUT";
+
     return (
-        <main className="min-h-screen bg-gray-50 p-6">
-            <div className="mx-auto max-w-lg">
+        <main className="relative flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4 sm:p-6">
+            <div className="flex w-full max-w-lg flex-col items-center">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold">
                         Campus Fair Scanner
@@ -100,7 +147,7 @@ export function ScannerPage({
                     </p>
                 </div>
 
-                <section className="mt-8 overflow-hidden rounded-xl border bg-white p-4 shadow-sm">
+                <section className="mt-8 w-full overflow-hidden rounded-xl border bg-white p-4 shadow-sm">
                     <QrScanner
                         onScan={handleScan}
                         disabled={isProcessing}
@@ -108,49 +155,53 @@ export function ScannerPage({
                 </section>
 
                 {isProcessing && !result && (
-                    <div className="mt-4 rounded-xl border bg-white p-4 text-center">
+                    <div className="mt-4 w-full rounded-xl border bg-white p-4 text-center">
                         <p className="font-medium">
                             Memproses QR...
                         </p>
                     </div>
                 )}
+            </div>
 
-                {result && (
-                    <section className="mt-4 rounded-xl border bg-white p-6 text-center shadow-sm">
-                        <div className="text-4xl">
+            {/* Result Modal Overlay */}
+            {result && (
+                <div className="fixed inset-0 z-99999 flex items-center justify-center bg-black/80 p-4">
+                    <section className="relative z-100000 w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl sm:p-8">
+                        <div
+                            className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full text-5xl font-bold ${result.success
+                                ? "bg-green-100 text-green-600"
+                                : "bg-red-100 text-red-600"
+                                }`}
+                        >
                             {result.success
-                                ? result.data?.type ===
-                                    "CHECK_IN"
+                                ? isCheckIn
                                     ? "✓"
-                                    : "↗"
+                                    : isCheckOut
+                                        ? "↗"
+                                        : "✓"
                                 : "✕"}
                         </div>
 
-                        <h2 className="mt-3 text-xl font-bold">
+                        <h2 className="mt-6 text-2xl font-bold">
                             {result.success
-                                ? result.data?.type ===
-                                    "CHECK_IN"
+                                ? isCheckIn
                                     ? "CHECK-IN BERHASIL"
                                     : "CHECK-OUT BERHASIL"
                                 : "SCAN GAGAL"}
                         </h2>
 
-                        <p className="mt-2 text-gray-600">
+                        <p className="mt-3 text-gray-600">
                             {result.message}
                         </p>
 
                         {result.success &&
                             result.data && (
-                                <div className="mt-4">
-                                    <p className="text-lg font-semibold">
-                                        {
-                                            result.data
-                                                .participant
-                                                .name
-                                        }
+                                <div className="mt-6 rounded-xl bg-gray-50 p-4">
+                                    <p className="text-xl font-semibold">
+                                        {result.data.participant.name}
                                     </p>
 
-                                    <p className="mt-1 font-mono text-sm text-gray-500">
+                                    <p className="mt-2 font-mono text-sm text-gray-500">
                                         {
                                             result.data
                                                 .participant
@@ -159,9 +210,22 @@ export function ScannerPage({
                                     </p>
                                 </div>
                             )}
+
+                        <p className="mt-6 text-sm text-gray-500">
+                            Scanner akan siap kembali
+                            dalam beberapa detik...
+                        </p>
+
+                        <button
+                            type="button"
+                            onClick={resetResult}
+                            className="mt-4 w-full rounded-lg border px-5 py-3 text-sm font-medium transition hover:bg-gray-50"
+                        >
+                            Scan Lagi
+                        </button>
                     </section>
-                )}
-            </div>
+                </div>
+            )}
         </main>
     );
 }

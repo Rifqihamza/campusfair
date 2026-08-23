@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/auth/permission";
 import { prisma } from "@/lib/db/prisma";
 import { DeleteEventButton } from "@/components/admin/delete-event-button";
 import Link from "next/link";
+import SharedButton from "@/components/shared/button";
 
 export default async function AdminEventsPage() {
     const session = await auth();
@@ -33,10 +34,16 @@ export default async function AdminEventsPage() {
                     <h1 className="text-3xl font-bold">
                         Events
                     </h1>
-                    <Link href="/events/new" className="w-fit rounded-lg bg-black px-4 py-1 text-white disabled:opacity-50"
-                    >
-                        + Buat Event
-                    </Link>
+                    <div className="flex flex-row gap-4">
+                        <SharedButton
+                            title="+ Buat Event"
+                            url="/admin/events/new"
+                        />
+                        <SharedButton
+                            title="Kembali ke Dashboard"
+                            url="/admin"
+                        />
+                    </div>
                 </div>
 
                 <div className="mt-6 space-y-4">
@@ -62,6 +69,14 @@ export default async function AdminEventsPage() {
 
                             <p className="mt-2 text-sm text-gray-600">
                                 Slug: {event.slug}
+                            </p>
+
+                            <p className="mt-2 text-sm text-gray-600">
+                                Tanggal Mulai: {event.startAt.toLocaleString()}
+                            </p>
+
+                            <p className="mt-2 text-sm text-gray-600">
+                                Tanggal Selesai: {event.endAt.toLocaleString()}
                             </p>
 
                             <p className="mt-2 text-sm">

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 export function LoginForm() {
     const router = useRouter();
@@ -36,7 +37,14 @@ export function LoginForm() {
                 return;
             }
 
-            router.push("/dashboard");
+            const session = await getSession()
+
+            if (session?.user?.role == "ADMIN") {
+                router.push("/admin")
+            } else {
+                router.push("/dashboard");
+            }
+
             router.refresh();
         } catch {
             setError("Terjadi kesalahan saat login.");
@@ -109,6 +117,14 @@ export function LoginForm() {
             >
                 {loading ? "Memproses..." : "Login"}
             </button>
+            <div className="flex items-center justify-center">
+                <span className="">
+                    Belum punya akun?&ensp;
+                    <Link href={"/register"} className="underline">
+                        Daftar Sekarang.</Link>
+                </span>
+
+            </div>
         </form>
     );
 }

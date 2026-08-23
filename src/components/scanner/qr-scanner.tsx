@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+
 import {
     Html5Qrcode,
     Html5QrcodeSupportedFormats,
@@ -16,18 +17,33 @@ export function QrScanner({
     disabled = false,
 }: QrScannerProps) {
     const generatedId = useId();
-    const containerId = `qr-reader-${generatedId.replace(/:/g, "")}`;
 
-    const containerRef = useRef<HTMLDivElement>(null);
-    const scannerRef = useRef<Html5Qrcode | null>(null);
+    const containerId =
+        `qr-reader-${generatedId.replace(/:/g, "")}`;
 
-    const onScanRef = useRef(onScan);
-    const disabledRef = useRef(disabled);
+    const containerRef =
+        useRef<HTMLDivElement>(null);
 
-    const lockedRef = useRef(false);
-    const unlockTimerRef = useRef<ReturnType<
-        typeof setTimeout
-    > | null>(null);
+    const scannerRef =
+        useRef<Html5Qrcode | null>(null);
+
+    const onScanRef =
+        useRef(onScan);
+
+    const disabledRef =
+        useRef(disabled);
+
+    const lockedRef =
+        useRef(false);
+
+    const unlockTimerRef =
+        useRef<ReturnType<typeof setTimeout> | null>(
+            null,
+        );
+
+    // Menyimpan cleanup scanner sebelumnya.
+    const cleanupRef =
+        useRef<Promise<void>>(Promise.resolve());
 
     useEffect(() => {
         onScanRef.current = onScan;
@@ -38,7 +54,8 @@ export function QrScanner({
     }, [disabled]);
 
     useEffect(() => {
-        const container = containerRef.current;
+        const container =
+            containerRef.current;
 
         if (!container) {
             return;
@@ -49,15 +66,19 @@ export function QrScanner({
 
         const clearTimer = () => {
             if (unlockTimerRef.current) {
-                clearTimeout(unlockTimerRef.current);
+                clearTimeout(
+                    unlockTimerRef.current,
+                );
+
                 unlockTimerRef.current = null;
             }
         };
 
-        const cleanup = async () => {
+        const stopScanner = async () => {
             clearTimer();
 
-            const currentScanner = scanner;
+            const currentScanner =
+                scanner;
 
             scanner = null;
 
@@ -85,41 +106,56 @@ export function QrScanner({
                 );
             }
 
-            if (container) {
-                container.replaceChildren();
-            }
-
-            if (scannerRef.current === currentScanner) {
+            if (
+                scannerRef.current ===
+                currentScanner
+            ) {
                 scannerRef.current = null;
             }
         };
 
         const start = async () => {
             /*
-             * Bersihkan container terlebih dahulu.
+             * Tunggu cleanup dari instance
+             * sebelumnya selesai.
              *
-             * Ini penting kalau React development mode
-             * melakukan mount/unmount/mount dengan cepat.
+             * Penting untuk React Strict Mode.
              */
+            await cleanupRef.current;
+
+            if (!mounted) {
+                return;
+            }
+
             container.replaceChildren();
 
-            const currentScanner = new Html5Qrcode(
-                containerId,
-                {
-                    verbose: false,
-                    formatsToSupport: [
-                        Html5QrcodeSupportedFormats.QR_CODE,
-                    ],
-                },
-            );
+            const currentScanner =
+                new Html5Qrcode(
+                    containerId,
+                    {
+                        verbose: false,
+                        formatsToSupport: [
+                            Html5QrcodeSupportedFormats
+                                .QR_CODE,
+                        ],
+                    },
+                );
 
-            scanner = currentScanner;
-            scannerRef.current = currentScanner;
+            scanner =
+                currentScanner;
+
+            scannerRef.current =
+                currentScanner;
 
             try {
+                console.log(
+                    "QR scanner: start",
+                );
+
                 await currentScanner.start(
                     {
-                        facingMode: "environment",
+                        facingMode:
+                            "environment",
                     },
                     {
                         fps: 10,
@@ -133,49 +169,62 @@ export function QrScanner({
                             return;
                         }
 
-                        if (disabledRef.current) {
+                        if (
+                            disabledRef.current
+                        ) {
                             return;
                         }
 
-                        if (lockedRef.current) {
+                        if (
+                            lockedRef.current
+                        ) {
                             return;
                         }
 
-                        lockedRef.current = true;
+                        lockedRef.current =
+                            true;
 
                         clearTimer();
 
-                        onScanRef.current(decodedText);
+                        onScanRef.current(
+                            decodedText,
+                        );
                     },
                     () => {
                         if (!mounted) {
                             return;
                         }
 
-                        /*
-                         * Jangan langsung unlock.
-                         * Beri kesempatan QR untuk kembali
-                         * terbaca di frame berikutnya.
-                         */
-                        if (!lockedRef.current) {
+                        if (
+                            !lockedRef.current
+                        ) {
                             return;
                         }
 
                         clearTimer();
 
-                        unlockTimerRef.current = setTimeout(() => {
-                            lockedRef.current = false;
-                            unlockTimerRef.current = null;
-                        }, 1000);
+                        unlockTimerRef.current =
+                            setTimeout(() => {
+                                lockedRef.current =
+                                    false;
+
+                                unlockTimerRef.current =
+                                    null;
+                            }, 1000);
                     },
                 );
 
+                console.log(
+                    "QR scanner: camera started",
+                );
+
                 /*
-                 * Kalau component sudah di-unmount ketika
-                 * start() selesai, jangan biarkan camera hidup.
+                 * Component ternyata sudah
+                 * di-unmount ketika camera
+                 * selesai start.
                  */
                 if (!mounted) {
-                    await cleanup();
+                    await stopScanner();
                 }
             } catch (error) {
                 if (mounted) {
@@ -184,16 +233,37 @@ export function QrScanner({
                         error,
                     );
                 } else {
-                    await cleanup();
+                    await stopScanner();
                 }
             }
         };
 
-        void start();
+        /*
+         * Simpan promise start supaya cleanup
+         * bisa menunggu proses start selesai.
+         */
+        const startPromise = start();
 
         return () => {
             mounted = false;
-            void cleanup();
+
+            /*
+             * Cleanup berikutnya menunggu start
+             * instance ini selesai terlebih dahulu,
+             * baru kamera dihentikan.
+             */
+            cleanupRef.current =
+                cleanupRef.current.then(
+                    async () => {
+                        try {
+                            await startPromise;
+                        } finally {
+                            await stopScanner();
+
+                            container.replaceChildren();
+                        }
+                    },
+                );
         };
     }, [containerId]);
 
