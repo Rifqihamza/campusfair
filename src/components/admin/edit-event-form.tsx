@@ -1,6 +1,6 @@
 "use client";
 
-import { updateEvent } from "@/app/admin/events/actions";
+import { updateEvent } from "@/lib/actions/admin/updateEvent";
 import { formatDateTimeLocal } from "@/lib/utils/date";
 
 type Props = {

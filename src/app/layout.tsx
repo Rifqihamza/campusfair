@@ -47,7 +47,6 @@ export default function RootLayout({
       className={`${oswald.variable} ${barlow.variable} ${bebasNeue.variable} h-full antialiased`}
     >
       <body className="relativ w-full h-auto">
-        {/* <Navbar /> */}
         {children}
       </body>
     </html>

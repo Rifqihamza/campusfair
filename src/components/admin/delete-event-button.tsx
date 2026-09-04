@@ -1,7 +1,6 @@
 "use client";
 
-import { deleteEvent } from "@/app/admin/events/actions";
-
+import { deleteEvent } from "@/lib/actions/admin/deleteEvent";
 type Props = {
     id: string;
 };

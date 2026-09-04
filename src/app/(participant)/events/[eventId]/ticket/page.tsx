@@ -2,17 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
+import { getEventTicket } from "@/services/participant/get-event-ticket";
 import { isParticipant } from "@/lib/auth/permission";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
-import { ParticipantQr } from "@/components/dashboard/participant-qr";
+import { ParticipantQr } from "@/components/participant/participant-qr";
 
 type TicketPageProps = {
     params: Promise<{ eventId: string }>;
 };
 
-export default async function TicketPage({ params }: TicketPageProps) {
+export default async function TicketPage({
+    params,
+}: TicketPageProps) {
     const session = await auth();
     const { eventId } = await params;
 
@@ -24,48 +26,14 @@ export default async function TicketPage({ params }: TicketPageProps) {
         redirect("/admin");
     }
 
-    const event = await prisma.event.findFirst({
-        where: {
-            id: eventId,
-            isActive: true,
-            deletedAt: null,
-        },
-        select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            startAt: true,
-            endAt: true,
-        },
-    });
+    const { event, eventParticipant } = await getEventTicket(
+        eventId,
+        session.user.id,
+    );
 
     if (!event) {
         notFound();
     }
-
-    const eventParticipant = await prisma.eventParticipant.findFirst({
-        where: {
-            eventId: event.id,
-            deletedAt: null,
-            participant: {
-                userId: session.user.id,
-                deletedAt: null,
-            },
-        },
-        select: {
-            id: true,
-            participantCode: true,
-            qrToken: true,
-            participant: {
-                select: {
-                    name: true,
-                    class: true,
-                    phone: true,
-                },
-            },
-        },
-    });
 
     if (!eventParticipant) {
         redirect(`/events/${event.id}`);

@@ -1,7 +1,6 @@
 "use client";
 
-import { createEvent } from "@/app/admin/events/actions";
-
+import { createEvent } from "@/lib/actions/admin/createEvent";
 export function EventForm() {
     return (
         <form

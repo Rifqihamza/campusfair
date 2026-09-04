@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth/auth";
 import { isParticipant } from "@/lib/auth/permission";
-import { registerParticipantToEvent } from "@/services/event-participant.service";
+import { registerParticipantToEvent } from "@/services/participant/register-to-event";
+import { registerEventSchema } from "@/lib/validations/event";
 
 export async function POST(request: Request) {
     try {
@@ -32,13 +33,29 @@ export async function POST(request: Request) {
             );
         }
 
-        const body = await request.json();
+        let body: unknown;
 
-        if (typeof body.eventId !== "string") {
+        try {
+            body = await request.json();
+        } catch {
             return NextResponse.json(
                 {
                     success: false,
-                    message: "eventId wajib diisi",
+                    message: "Request body tidak valid",
+                },
+                {
+                    status: 400,
+                },
+            );
+        }
+
+        const validation = registerEventSchema.safeParse(body);
+
+        if (!validation.success) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    message: "eventId tidak valid",
                 },
                 {
                     status: 400,
@@ -49,7 +66,7 @@ export async function POST(request: Request) {
         const participant =
             await registerParticipantToEvent(
                 session.user.id,
-                body.eventId,
+                validation.data.eventId,
             );
 
         return NextResponse.json(

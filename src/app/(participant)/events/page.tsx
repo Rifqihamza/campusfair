@@ -1,33 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-
-import { prisma } from "@/lib/db/prisma";
-
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
-export default async function EventsPage() {
-    const now = new Date();
+import { getEvents } from "@/services/participant/get-events";
 
-    const events = await prisma.event.findMany({
-        where: {
-            isActive: true,
-            deletedAt: null,
-            endAt: {
-                gte: now,
-            },
-        },
-        orderBy: {
-            startAt: "asc",
-        },
-        select: {
-            id: true,
-            name: true,
-            slug: true,
-            description: true,
-            startAt: true,
-            endAt: true,
-        },
-    });
+export default async function EventsPage() {
+    const events = await getEvents();
 
     return (
         <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-4">

@@ -38,4 +38,6 @@ export const eventSchema = z
         },
     );
 
-export type EventInput = z.infer<typeof eventSchema>;
+export const registerEventSchema = z.object({
+    eventId: z.uuid(),
+});

@@ -11,7 +11,3 @@ export const attendanceSchema = z.object({
         .trim()
         .min(1, "QR token wajib diisi"),
 });
-
-export type AttendanceInput = z.infer<
-    typeof attendanceSchema
->;

@@ -1,32 +1,5 @@
 import { GraphicCard } from "@/components/shared/graphic-card";
-
-const highlights = [
-    {
-        number: "01",
-        title: "Kenali Kampus",
-        description:
-            "Dapatkan informasi dan kenali berbagai pilihan kampus yang bisa menjadi tujuanmu.",
-        accent: "lime" as const,
-        rotate: "-1" as const,
-    },
-    {
-        number: "02",
-        title: "Eksplorasi Pilihan",
-        description:
-            "Temukan berbagai bidang studi dan peluang yang sesuai dengan minat serta rencanamu.",
-        accent: "yellow" as const,
-        rotate: "1" as const,
-    },
-    {
-        number: "03",
-        title: "Mulai Langkahmu",
-        description:
-            "Gunakan informasi yang kamu dapatkan untuk mempersiapkan langkah setelah sekolah.",
-        accent: "cyan" as const,
-        rotate: "-1" as const,
-    },
-];
-
+import { highlightsData } from "@/data/highlights";
 export function HighlightsSection() {
     return (
         <section
@@ -54,11 +27,24 @@ export function HighlightsSection() {
                 </div>
 
                 <div className="mt-10 grid gap-6 md:grid-cols-3">
-                    {highlights.map((item) => (
+                    {highlightsData.map((item) => (
                         <GraphicCard
                             key={item.number}
-                            accent={item.accent}
-                            rotate={item.rotate}
+                            accent={
+                                item.accent as
+                                | "lime"
+                                | "yellow"
+                                | "cyan"
+                                | "pink"
+                            }
+                            rotate={
+                                item.rotate as
+                                | "0"
+                                | "-2"
+                                | "-1"
+                                | "1"
+                                | "2"
+                            }
                             className="p-6 md:p-7"
                         >
                             <span className="font-display text-6xl text-navy">

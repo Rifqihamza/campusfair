@@ -1,13 +1,29 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-import { registerParticipant } from "@/services/auth.service";
+import { registerParticipant } from "@/services/auth/register-participant";
 
 export async function POST(request: Request) {
-    try {
-        const body = await request.json();
+    let body: unknown;
 
-        const result = await registerParticipant(body);
+    try {
+        body = await request.json();
+    } catch {
+        return NextResponse.json(
+            {
+                success: false,
+                message: "Request body tidak valid",
+            },
+            {
+                status: 400,
+            },
+        );
+    }
+
+    try {
+        const result = await registerParticipant(
+            body as Parameters<typeof registerParticipant>[0],
+        );
 
         return NextResponse.json(
             {

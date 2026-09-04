@@ -1,87 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-type FormData = {
-    name: string;
-    school: string;
-    major: string;
-    class: string;
-    phone: string;
-    email: string;
-    password: string;
-};
-
-const initialForm: FormData = {
-    name: "",
-    school: "",
-    major: "",
-    class: "",
-    phone: "",
-    email: "",
-    password: "",
-};
+import { useRegister } from "@/hooks/auth/use-register";
 
 export function RegisterForm() {
-    const router = useRouter();
+    const {
+        form,
+        error,
+        loading,
+        handleChange,
+        register,
+    } = useRegister();
 
-    const [form, setForm] =
-        useState<FormData>(initialForm);
-
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    function handleChange(
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) {
-        const { name, value } = event.target;
-
-        setForm((current) => ({
-            ...current,
-            [name]: value,
-        }));
-    }
-
-    async function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>,
-    ) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-
-        setError("");
-        setLoading(true);
-
-        try {
-            const response = await fetch(
-                "/api/auth/register",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-                    },
-                    body: JSON.stringify(form),
-                },
-            );
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                setError(
-                    result.message ??
-                    "Registrasi gagal.",
-                );
-                return;
-            }
-
-            router.push("/login?registered=true");
-        } catch {
-            setError(
-                "Terjadi kesalahan. Silakan coba lagi.",
-            );
-        } finally {
-            setLoading(false);
-        }
+        await register();
     }
 
     const inputClass =

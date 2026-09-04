@@ -1,61 +1,27 @@
 "use client";
 
-import { useState } from "react";
-
-import { signIn, getSession } from "next-auth/react";
-
-import { useRouter, useSearchParams } from "next/navigation";
-
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useLogin } from "@/hooks/auth/use-login";
 
 export function LoginForm() {
-    const router = useRouter();
     const searchParams = useSearchParams();
-
     const registered = searchParams.get("registered");
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const {
+        email,
+        password,
+        error,
+        loading,
+        setEmail,
+        setPassword,
+        login,
+    } = useLogin();
 
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    async function handleSubmit(
-        event: React.FormEvent<HTMLFormElement>,
-    ) {
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-
-        setError("");
-        setLoading(true);
-
-        try {
-            const result = await signIn("credentials", {
-                email,
-                password,
-                redirect: false,
-            });
-
-            if (!result || result.error) {
-                setError("Email atau password salah.");
-                return;
-            }
-
-            const session = await getSession();
-
-            if (session?.user?.role === "ADMIN") {
-                router.push("/admin");
-            } else {
-                router.push("/dashboard");
-            }
-
-            router.refresh();
-        } catch {
-            setError("Terjadi kesalahan saat login.");
-        } finally {
-            setLoading(false);
-        }
+        await login();
     }
-
     return (
         <form
             onSubmit={handleSubmit}

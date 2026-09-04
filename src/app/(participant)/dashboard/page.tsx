@@ -4,10 +4,11 @@ import { redirect } from "next/navigation";
 
 import { LogoutButton } from "@/components/auth/logout-button";
 import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
 import { isParticipant } from "@/lib/auth/permission";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
+import { getDashboardData } from "@/services/participant/get-dashboard-data";
 import { ArrowRight } from "lucide-react";
+
 export default async function DashboardPage() {
     const session = await auth();
 
@@ -19,16 +20,9 @@ export default async function DashboardPage() {
         redirect("/admin");
     }
 
-    const participant = await prisma.participantProfile.findFirst({
-        where: {
-            userId: session.user.id,
-            deletedAt: null,
-        },
-        select: {
-            id: true,
-            name: true,
-        },
-    });
+    const { participant, registrations } = await getDashboardData(
+        session.user.id,
+    );
 
     if (!participant) {
         return (
@@ -47,31 +41,6 @@ export default async function DashboardPage() {
             </main>
         );
     }
-
-    const registrations = await prisma.eventParticipant.findMany({
-        where: {
-            participantId: participant.id,
-            deletedAt: null,
-            event: {
-                deletedAt: null,
-            },
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-        include: {
-            event: {
-                select: {
-                    id: true,
-                    name: true,
-                    description: true,
-                    startAt: true,
-                    endAt: true,
-                    isActive: true,
-                },
-            },
-        },
-    });
 
     return (
         <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-4">
@@ -117,7 +86,7 @@ export default async function DashboardPage() {
                 {/* =================================================
                     WELCOME HERO
                 ================================================== */}
-                <section className="relative mt-5 overflow-hidden rounded-3xl border-2 border-navy bg-navy px-6 py-10 shadow-[0px_8px_0_#B5FF2C] sm:px-10 sm:py-12">
+                <section className="relative mt-5 overflow-hidden rounded-3xl border-2 border-navy bg-navy px-7 py-10 shadow-[6px_6px_0_#B5FF2C] sm:px-10 sm:py-12">
                     <div className="relative z-10 max-w-4xl">
                         <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
                             IKAMAMIIND 2100 | CAMPUS FAIR

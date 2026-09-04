@@ -2,12 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { EventRegistration } from "@/components/dashboard/event-registration";
-import { ParticipantQr } from "@/components/dashboard/participant-qr";
+import { EventRegistration } from "@/components/participant/event-registration";
+import { ParticipantQr } from "@/components/participant/participant-qr";
 
 import { auth } from "@/lib/auth/auth";
-import { prisma } from "@/lib/db/prisma";
-
+import { getEventDetail } from "@/services/participant/get-event-detail";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
@@ -18,52 +17,20 @@ type EventDetailPageProps = {
     }>;
 };
 
-export default async function EventDetailPage({ params }: EventDetailPageProps) {
+export default async function EventDetailPage({
+    params,
+}: EventDetailPageProps) {
     const { eventId } = await params;
-
-    const event = await prisma.event.findFirst({
-        where: {
-            id: eventId,
-            isActive: true,
-            deletedAt: null,
-        },
-        select: {
-            id: true,
-            name: true,
-            description: true,
-            startAt: true,
-            endAt: true,
-        },
-    });
-
-    if (!event) {
-        notFound();
-    }
 
     const session = await auth();
 
-    let eventParticipant = null;
+    const { event, eventParticipant } = await getEventDetail(
+        eventId,
+        session?.user?.id,
+    );
 
-    if (session?.user?.id) {
-        const participant = await prisma.participantProfile.findFirst({
-            where: {
-                userId: session.user.id,
-                deletedAt: null,
-            },
-            select: {
-                id: true,
-            },
-        });
-
-        if (participant) {
-            eventParticipant = await prisma.eventParticipant.findFirst({
-                where: {
-                    eventId: event.id,
-                    participantId: participant.id,
-                    deletedAt: null,
-                },
-            });
-        }
+    if (!event) {
+        notFound();
     }
 
     const now = new Date();

@@ -2,95 +2,66 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth/auth";
 import { isAdmin } from "@/lib/auth/permission";
-import { prisma } from "@/lib/db/prisma";
-import { APP_TIMEZONE } from "@/lib/utils/date";
+import { getAttendanceExportData } from "@/services/admin/attendance/get-attendance-export-data";
 
 type RouteContext = {
-    params: Promise<{ eventId: string }>;
+    params: Promise<{
+        eventId: string;
+    }>;
 };
 
-function formatDateTime(date: Date | null) {
-    if (!date) return "";
+function escapeCsv(
+    value: string | number | null,
+) {
+    const stringValue =
+        value == null ? "" : String(value);
 
-    return new Intl.DateTimeFormat("id-ID", {
-        timeZone: APP_TIMEZONE,
-        dateStyle: "short",
-        timeStyle: "medium",
-    }).format(date);
-}
-
-function escapeCsv(value: string | number | null) {
-    const stringValue = value == null ? "" : String(value);
+    const safeValue =
+        /^[=+\-@]/.test(stringValue)
+            ? `'${stringValue}`
+            : stringValue;
 
     if (
-        stringValue.includes(",") ||
-        stringValue.includes('"') ||
-        stringValue.includes("\n")
+        safeValue.includes(",") ||
+        safeValue.includes('"') ||
+        safeValue.includes("\n")
     ) {
-        return `"${stringValue.replace(/"/g, '""')}"`;
+        return `"${safeValue.replace(/"/g, '""')}"`;
     }
 
-    return stringValue;
+    return safeValue;
 }
 
 export async function GET(
     _request: Request,
-    { params }: RouteContext
+    { params }: RouteContext,
 ) {
     const session = await auth();
 
-    if (!session?.user?.id || !isAdmin(session.user.role)) {
+    if (
+        !session?.user?.id ||
+        !isAdmin(session.user.role)
+    ) {
         return NextResponse.json(
             { message: "Unauthorized" },
-            { status: 401 }
+            { status: 401 },
         );
     }
 
     const { eventId } = await params;
 
-    const event = await prisma.event.findFirst({
-        where: {
-            id: eventId,
-            deletedAt: null,
-        },
-        select: {
-            id: true,
-            slug: true,
-        },
-    });
+    const data =
+        await getAttendanceExportData(eventId);
 
-    if (!event) {
+    if (!data) {
         return NextResponse.json(
-            { message: "Event tidak ditemukan" },
-            { status: 404 }
+            {
+                message:
+                    "Event tidak ditemukan",
+            },
+            { status: 404 },
         );
     }
-
-    const participants = await prisma.eventParticipant.findMany({
-        where: {
-            eventId: event.id,
-            deletedAt: null,
-            participant: {
-                deletedAt: null,
-            },
-        },
-        orderBy: {
-            createdAt: "asc",
-        },
-        include: {
-            participant: true,
-            attendanceLogs: {
-                where: {
-                    type: {
-                        in: ["CHECK_IN", "CHECK_OUT"],
-                    },
-                },
-                orderBy: {
-                    scannedAt: "asc",
-                },
-            },
-        },
-    });
 
     const headers = [
         "No",
@@ -104,51 +75,36 @@ export async function GET(
         "Check Out",
     ];
 
-    const rows = participants.map((item, index) => {
-        const checkIn = item.attendanceLogs.find(
-            (log) => log.type === "CHECK_IN"
-        );
-
-        const checkOut = item.attendanceLogs.find(
-            (log) => log.type === "CHECK_OUT"
-        );
-
-        let status = "BELUM HADIR";
-
-        if (checkIn && !checkOut) {
-            status = "DI VENUE";
-        }
-
-        if (checkIn && checkOut) {
-            status = "SUDAH KELUAR";
-        }
-
-        return [
-            index + 1,
-            item.participant.userId,
-            item.participant.name,
-            item.participant.class,
-            item.participant.major,
-            item.participant.school,
-            status,
-            formatDateTime(checkIn?.scannedAt ?? null),
-            formatDateTime(checkOut?.scannedAt ?? null),
-        ];
-    });
+    const rows = data.participants.map(
+        (participant) => [
+            participant.no,
+            participant.userId,
+            participant.name,
+            participant.className,
+            participant.major,
+            participant.school,
+            participant.status,
+            participant.checkIn,
+            participant.checkOut,
+        ],
+    );
 
     const csv = [
         headers.map(escapeCsv).join(","),
-        ...rows.map((row) => row.map(escapeCsv).join(",")),
+        ...rows.map((row) =>
+            row.map(escapeCsv).join(","),
+        ),
     ].join("\r\n");
 
-    // UTF-8 BOM supaya Excel membaca karakter Indonesia dengan benar.
     const csvWithBom = `\uFEFF${csv}`;
 
     return new NextResponse(csvWithBom, {
         status: 200,
         headers: {
-            "Content-Type": "text/csv; charset=utf-8",
-            "Content-Disposition": `attachment; filename="attendance-${event.slug}.csv"`,
+            "Content-Type":
+                "text/csv; charset=utf-8",
+            "Content-Disposition":
+                `attachment; filename="attendance-${data.event.slug}.csv"`,
         },
     });
 }

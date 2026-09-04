@@ -1,12 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { LogoutButton } from "@/components/auth/logout-button";
 import { auth } from "@/lib/auth/auth";
 import { isAdmin } from "@/lib/auth/permission";
-import { prisma } from "@/lib/db/prisma";
+import { getAdminEventAttendance } from "@/services/admin/get-event-attendance";
 import { APP_TIMEZONE } from "@/lib/utils/date";
+
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminHero } from "@/components/admin/admin-hero";
 
 type Props = {
     params: Promise<{
@@ -27,141 +28,40 @@ export default async function AttendancePage({ params }: Props) {
 
     const { eventId } = await params;
 
-    const event = await prisma.event.findFirst({
-        where: {
-            id: eventId,
-            deletedAt: null,
-        },
-    });
+    const {
+        event,
+        participants,
+        totalParticipants,
+        checkInCount,
+        checkOutCount,
+    } = await getAdminEventAttendance(eventId);
+
+    const insideCount = checkInCount - checkOutCount;
 
     if (!event) {
         notFound();
     }
 
-    const participants = await prisma.eventParticipant.findMany({
-        where: {
-            eventId,
-            deletedAt: null,
-            participant: {
-                deletedAt: null,
-            },
-        },
-        include: {
-            participant: true,
-            attendanceLogs: {
-                orderBy: {
-                    scannedAt: "asc",
-                },
-            },
-        },
-        orderBy: {
-            createdAt: "asc",
-        },
-    });
-
-    const totalParticipants = await prisma.eventParticipant.count({
-        where: {
-            eventId,
-            deletedAt: null,
-        },
-    });
-
-    const checkInCount = await prisma.attendanceLog.count({
-        where: {
-            type: "CHECK_IN",
-            eventParticipant: {
-                eventId,
-                deletedAt: null,
-                participant: {
-                    deletedAt: null,
-                },
-            },
-        },
-    });
-
-    const checkOutCount = await prisma.attendanceLog.count({
-        where: {
-            type: "CHECK_OUT",
-            eventParticipant: {
-                eventId,
-                deletedAt: null,
-                participant: {
-                    deletedAt: null,
-                },
-            },
-        },
-    });
-
-    const insideCount = checkInCount - checkOutCount;
-
     return (
         <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-6">
-            <header className="sticky top-5 z-20 mx-auto w-full max-w-7xl rounded-full bg-navy text-cream shadow-[0_4px_0_rgba(11,31,58,0.25)]">
-                <div className="flex items-center justify-between rounded-full bg-navy px-4 py-2 text-cream sm:px-5">
-                    <Link
-                        href="/admin"
-                        className="flex items-center gap-3"
-                    >
-                        <Image
-                            src="/logo.jpg"
-                            alt="Logo IKAMAMIIND 2100"
-                            width={50}
-                            height={50}
-                            priority
-                            className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12"
-                        />
-
-                        <div className="flex flex-col -space-y-2 font-display leading-none tracking-wide">
-                            <span className="text-xl sm:text-2xl">
-                                IKAMAMIIND
-                            </span>
-
-                            <span className="text-2xl sm:text-3xl">
-                                2100
-                            </span>
-                        </div>
-                    </Link>
-
-                    <div className="flex items-center gap-4">
-                        <span className="hidden font-body text-sm font-bold text-sky sm:block">
-                            ADMIN PANEL
-                        </span>
-
-                        <LogoutButton
-                            className="border-none bg-transparent pr-2 font-body text-[16px] font-bold text-white transition-colors duration-300 hover:bg-transparent hover:text-lime"
-                        />
-                    </div>
-                </div>
-            </header>
+            <AdminHeader />
 
             <div className="relative z-10 mx-auto max-w-7xl py-5">
-                <section className="relative mt-5 overflow-hidden rounded-3xl border-2 border-navy bg-navy px-7 py-8 shadow-[6px_6px_0_#B5FF2C] sm:px-10">
-                    <div className="relative z-10">
-                        <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
-                            ATTENDANCE MONITORING
+                <AdminHero
+                    eyebrow="ATTENDANCE MONITORING"
+                    title={event.name}
+                    description="Monitoring kehadiran peserta secara real-time."
+                >
+                    <div className="mt-3">
+                        <p className="font-body text-md font-bold uppercase tracking-[0.15em] text-sky">
+                            Scanner URL
                         </p>
 
-                        <h1 className="mt-3 max-w-4xl font-display text-5xl leading-[0.82] tracking-tight text-cream sm:text-6xl">
-                            {event.name}
-                        </h1>
-
-
-                        <div className="mt-3">
-                            <p className="font-body text-md font-bold uppercase tracking-[0.15em] text-sky">
-                                Scanner URL
-                            </p>
-
-                            <p className="mt-2 break-all font-mono text-md font-bold text-sky bg-cream/20 px-4 py-2 rounded-md w-fit">
-                                /scanner/{event.scannerToken}
-                            </p>
-                        </div>
-                        <p className="mt-5 font-body text-sm font-medium text-sky sm:text-base">
-                            Monitoring kehadiran peserta secara real-time.
+                        <p className="mt-2 w-fit break-all rounded-md bg-cream/20 px-4 py-2 font-mono text-md font-bold text-sky">
+                            /scanner/{event.scannerToken}
                         </p>
                     </div>
-
-                    <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-lime sm:h-36 sm:w-36" />
-                </section>
+                </AdminHero>
 
                 <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
                     <div>

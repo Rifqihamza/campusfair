@@ -1,14 +1,14 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { DeleteEventButton } from "@/components/admin/delete-event-button";
-import { LogoutButton } from "@/components/auth/logout-button";
 import { auth } from "@/lib/auth/auth";
 import { isAdmin } from "@/lib/auth/permission";
-import { prisma } from "@/lib/db/prisma";
+import { getAdminEvents } from "@/services/admin/get-events";
 import { APP_TIMEZONE } from "@/lib/utils/date";
 
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminHero } from "@/components/admin/admin-hero";
 export default async function AdminEventsPage() {
     const session = await auth();
 
@@ -20,14 +20,7 @@ export default async function AdminEventsPage() {
         redirect("/dashboard");
     }
 
-    const events = await prisma.event.findMany({
-        where: {
-            deletedAt: null,
-        },
-        orderBy: {
-            startAt: "desc",
-        },
-    });
+    const events = await getAdminEvents();
 
     const now = new Date();
 
@@ -47,78 +40,22 @@ export default async function AdminEventsPage() {
         });
 
     return (
-        <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-6">
-            {/* HEADER */}
-            <header className="sticky top-5 z-20 mx-auto w-full max-w-7xl rounded-full bg-navy text-cream shadow-[0_4px_0_rgba(11,31,58,0.25)]">
-                <div className="flex items-center justify-between rounded-full bg-navy px-4 py-2 text-cream sm:px-5">
-                    <Link
-                        href="/admin"
-                        className="flex items-center gap-3"
-                    >
-                        <Image
-                            src="/logo.jpg"
-                            alt="Logo IKAMAMIIND 2100"
-                            width={50}
-                            height={50}
-                            priority
-                            className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12"
-                        />
-
-                        <div className="flex flex-col -space-y-2 font-display leading-none tracking-wide">
-                            <span className="text-xl sm:text-2xl">
-                                IKAMAMIIND
-                            </span>
-
-                            <span className="text-2xl sm:text-3xl">
-                                2100
-                            </span>
-                        </div>
-                    </Link>
-
-                    <div className="flex items-center gap-4">
-                        <span className="hidden font-body text-sm font-bold text-sky sm:block">
-                            ADMIN PANEL
-                        </span>
-
-                        <LogoutButton
-                            className="border-none bg-transparent pr-2 font-body text-[16px] font-bold text-white transition-colors duration-300 hover:bg-transparent hover:text-lime"
-                        />
-                    </div>
-                </div>
-            </header>
+        <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-4">
+            <AdminHeader />
 
             <div className="relative z-10 mx-auto max-w-7xl py-5">
-                {/* PAGE HEADER */}
-                <section className="relative mt-5 overflow-hidden rounded-3xl border-2 border-navy bg-navy px-7 py-8 shadow-[6px_6px_0_#B5FF2C] sm:px-10">
-                    <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
-                                IKAMAMIIND 2100 | ADMIN
-                            </p>
-
-                            <h1 className="mt-3 font-display text-5xl leading-[0.82] tracking-tight text-cream sm:text-6xl">
-                                EVENTS
-                            </h1>
-
-                            <p className="mt-4 max-w-xl font-body text-sm leading-6 text-sky sm:text-base">
-                                Kelola event Campus Fair, lihat
-                                attendance, dan siapkan scanner untuk
-                                panitia.
-                            </p>
-                        </div>
-
-                        <Link
-                            href="/admin/events/new"
-                            className="inline-flex shrink-0 items-center justify-center rounded-xl border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
-                        >
-                            + Buat Event
-                        </Link>
-                    </div>
-
-                    <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-lime sm:h-36 sm:w-36" />
-
-                    <div className="absolute -bottom-12 right-24 h-24 w-32 rotate-12 rounded-2xl bg-sky/40" />
-                </section>
+                <AdminHero
+                    eyebrow="IKAMAMIIND 2100 | ADMIN"
+                    title="EVENTS"
+                    description="Kelola event Campus Fair, lihat attendance, dan siapkan scanner untuk panitia."
+                >
+                    <Link
+                        href="/admin/events/new"
+                        className="mt-4 inline-flex shrink-0 items-center justify-center rounded-xl border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                    >
+                        + Buat Event
+                    </Link>
+                </AdminHero>
 
                 {/* EVENTS */}
                 <section className="mt-12">

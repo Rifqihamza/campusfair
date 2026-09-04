@@ -1,77 +1,6 @@
 import DriftWall from "@/components/shared/driftwall";
 import Image from "next/image";
-const campusLogos = [
-    {
-        image: "/campus-logo/ipb.jpeg",
-        title: "Universitas Indonesia",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/itb.png",
-        title: "Institut Teknologi Bandung",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/its.jpg",
-        title: "Universitas Gadjah Mada",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/telyu.png",
-        title: "IPB University",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/ub.jpeg",
-        title: "Universitas Padjadjaran",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/ugm.jpeg",
-        title: "Universitas Indonesia",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/ui.png",
-        title: "Institut Teknologi Bandung",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/uin.png",
-        title: "Universitas Gadjah Mada",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/unair.png",
-        title: "IPB University",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/undip.jpeg",
-        title: "Universitas Padjadjaran",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/unesa.jpeg",
-        title: "Universitas Indonesia",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/unnes.png",
-        title: "Institut Teknologi Bandung",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/uns.png",
-        title: "Universitas Gadjah Mada",
-        href: "#",
-    },
-    {
-        image: "/campus-logo/upi.png",
-        title: "IPB University",
-        href: "#",
-    },
-];
+import { campusLogo } from "@/data/campusLogo";
 
 export function AboutSection() {
     return (
@@ -137,7 +66,7 @@ export function AboutSection() {
             {/* Campus logo wall */}
             <div className="pointer-events-none z-10 mx-auto -mt-70 h-[35em] w-full sticky lg:absolute bottom-0 lg:bottom-0 lg:-right-1/4 lg:mt-0 lg:h-full lg:w-full">
                 <DriftWall
-                    items={campusLogos}
+                    items={campusLogo}
                     columns={3}
                     tileWidth={150}
                     tileHeight={150}

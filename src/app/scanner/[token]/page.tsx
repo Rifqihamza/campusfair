@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { ScannerPage } from "@/components/scanner/scanner-page";
-import { prisma } from "@/lib/db/prisma";
+import { getScannerEvent } from "@/services/attendance/get-scanner-event";
 
 type ScannerPageProps = {
     params: Promise<{
@@ -12,16 +12,9 @@ type ScannerPageProps = {
 export default async function ScannerRoutePage({
     params,
 }: ScannerPageProps) {
-
     const { token } = await params;
 
-    const event = await prisma.event.findFirst({
-        where: {
-            scannerToken: token,
-            isActive: true,
-            deletedAt: null,
-        },
-    });
+    const event = await getScannerEvent(token);
 
     if (!event) {
         notFound();

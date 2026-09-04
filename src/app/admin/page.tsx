@@ -1,12 +1,17 @@
-import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { LogoutButton } from "@/components/auth/logout-button";
 import { auth } from "@/lib/auth/auth";
 import { isAdmin } from "@/lib/auth/permission";
-import { prisma } from "@/lib/db/prisma";
 import { APP_TIMEZONE } from "@/lib/utils/date";
+import { getAdminDashboardData } from "@/services/admin/get-dashboard-data";
+
+import { RegistrationChart } from "@/components/admin/registration-chart";
+import { AttendanceChart } from "@/components/admin/attendance-chart";
+import { ArrowRight } from "lucide-react";
+
+import { AdminHeader } from "@/components/admin/admin-header";
+import { AdminHero } from "@/components/admin/admin-hero";
 
 export default async function AdminPage() {
     const session = await auth();
@@ -19,9 +24,8 @@ export default async function AdminPage() {
         redirect("/dashboard");
     }
 
-    const now = new Date();
-
-    const [
+    const {
+        now,
         totalEvents,
         activeEvents,
         totalParticipants,
@@ -29,95 +33,8 @@ export default async function AdminPage() {
         totalCheckIns,
         totalCheckOuts,
         recentEvents,
-    ] = await Promise.all([
-        prisma.event.count({
-            where: {
-                deletedAt: null,
-            },
-        }),
-
-        prisma.event.count({
-            where: {
-                isActive: true,
-                deletedAt: null,
-                endAt: {
-                    gte: now,
-                },
-            },
-        }),
-
-        prisma.participantProfile.count({
-            where: {
-                deletedAt: null,
-            },
-        }),
-
-        prisma.eventParticipant.count({
-            where: {
-                deletedAt: null,
-                event: {
-                    deletedAt: null,
-                },
-                participant: {
-                    deletedAt: null,
-                },
-            },
-        }),
-
-        prisma.attendanceLog.count({
-            where: {
-                type: "CHECK_IN",
-                eventParticipant: {
-                    deletedAt: null,
-                    event: {
-                        deletedAt: null,
-                    },
-                    participant: {
-                        deletedAt: null,
-                    },
-                },
-            },
-        }),
-
-        prisma.attendanceLog.count({
-            where: {
-                type: "CHECK_OUT",
-                eventParticipant: {
-                    deletedAt: null,
-                    event: {
-                        deletedAt: null,
-                    },
-                    participant: {
-                        deletedAt: null,
-                    },
-                },
-            },
-        }),
-
-        prisma.event.findMany({
-            where: {
-                deletedAt: null,
-            },
-            orderBy: {
-                startAt: "desc",
-            },
-            take: 5,
-            include: {
-                _count: {
-                    select: {
-                        eventParticipants: {
-                            where: {
-                                deletedAt: null,
-                                participant: {
-                                    deletedAt: null,
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        }),
-    ]);
+        eventRegistrationStats,
+    } = await getAdminDashboardData();
 
     const insideVenue = Math.max(
         totalCheckIns - totalCheckOuts,
@@ -140,74 +57,16 @@ export default async function AdminPage() {
         });
 
     return (
-        <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-6">
-            {/* HEADER */}
-            <header className="sticky top-5 z-20 mx-auto w-full max-w-7xl rounded-full bg-navy text-cream shadow-[0_4px_0_rgba(11,31,58,0.25)]">
-                <div className="flex items-center justify-between rounded-full bg-navy px-4 py-2 text-cream sm:px-5">
-                    <Link
-                        href="/admin"
-                        className="flex items-center gap-3"
-                    >
-                        <Image
-                            src="/logo.jpg"
-                            alt="Logo IKAMAMIIND 2100"
-                            width={50}
-                            height={50}
-                            priority
-                            className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12"
-                        />
+        <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-4">
+            <AdminHeader />
 
-                        <div className="flex flex-col -space-y-2 font-display leading-none tracking-wide">
-                            <span className="text-xl sm:text-2xl">
-                                IKAMAMIIND
-                            </span>
-
-                            <span className="text-2xl sm:text-3xl">
-                                2100
-                            </span>
-                        </div>
-                    </Link>
-
-                    <div className="flex items-center gap-4">
-                        <span className="hidden font-body text-sm font-bold text-sky sm:block">
-                            ADMIN PANEL
-                        </span>
-
-                        <LogoutButton
-                            className="border-none bg-transparent pr-2 font-body text-[16px] font-bold text-white transition-colors duration-300 hover:bg-transparent hover:text-lime"
-                        />
-                    </div>
-                </div>
-            </header>
 
             <div className="relative z-10 mx-auto max-w-7xl py-5">
-                {/* HERO */}
-                <section className="relative mt-5 overflow-hidden rounded-3xl border-2 border-navy bg-navy px-7 py-10 shadow-[6px_6px_0_#B5FF2C] sm:px-10 sm:py-12">
-                    <div className="relative z-10 max-w-4xl">
-                        <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
-                            IKAMAMIIND 2100 | ADMIN PANEL
-                        </p>
-
-                        <h1 className="mt-4 font-display text-5xl leading-[0.82] tracking-tight text-cream sm:text-6xl md:text-7xl">
-                            ADMIN
-                            <br />
-                            DASHBOARD
-                        </h1>
-
-                        <p className="mt-5 max-w-2xl font-body text-sm leading-6 text-sky sm:text-base">
-                            Selamat datang,{" "}
-                            <span className="font-bold text-cream">
-                                {session.user.name}
-                            </span>
-                            . Pantau event, peserta, dan kehadiran
-                            Campus Fair dari satu tempat.
-                        </p>
-                    </div>
-
-                    <div className="absolute -right-8 -top-10 h-32 w-32 rounded-full bg-lime sm:h-36 sm:w-36" />
-
-                    <div className="absolute -bottom-14 right-16 h-24 w-32 rotate-12 rounded-2xl bg-sky/40 sm:right-24 sm:h-28 sm:w-36" />
-                </section>
+                <AdminHero
+                    eyebrow="IKAMAMIIND 2100 | ADMIN PANEL"
+                    title="ADMIN DASHBOARD"
+                    description={`Selamat datang, ${session.user.email}. Pantau event, peserta, dan kehadiran Campus Fair dari satu tempat.`}
+                />
 
                 {/* OVERVIEW */}
                 <section className="mt-12">
@@ -285,6 +144,29 @@ export default async function AdminPage() {
                     </div>
                 </section>
 
+                <section className="mt-12">
+                    <div>
+                        <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
+                            ANALYTICS
+                        </p>
+
+                        <h2 className="mt-1 font-display text-3xl leading-none text-cream sm:text-4xl">
+                            Analisis
+                        </h2>
+                    </div>
+
+                    <div className="mt-6 grid gap-5 lg:grid-cols-[1.5fr_1fr]">
+                        <RegistrationChart
+                            data={eventRegistrationStats}
+                        />
+
+                        <AttendanceChart
+                            insideVenue={insideVenue}
+                            checkedOut={totalCheckOuts}
+                        />
+                    </div>
+                </section>
+
                 {/* RECENT EVENTS */}
                 <section className="mt-12">
                     <div className="flex items-end justify-between gap-4">
@@ -333,10 +215,10 @@ export default async function AdminPage() {
                                 return (
                                     <article
                                         key={event.id}
-                                        className="group relative overflow-hidden rounded-3xl border-2 border-navy bg-sky p-6 shadow-[6px_6px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-[8px_8px_0_#0B1F3A] sm:p-8"
+                                        className="group relative overflow-hidden rounded-2xl border-2 border-navy bg-sky px-6 py-6 shadow-[0px_6px_0_#0B1F3A] sm:px-6"
                                     >
-                                        <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                                            <div>
+                                        <div className="relative z-10 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                                            <div className="min-w-0">
                                                 <div className="flex flex-wrap items-center gap-3">
                                                     <span className="rounded-full bg-navy px-3 py-1 font-body text-xs font-bold text-cream">
                                                         {status}
@@ -352,6 +234,10 @@ export default async function AdminPage() {
                                                     {event.name}
                                                 </h3>
 
+                                                <p className="mt-2 font-medium text-sm leading-5 text-navy/70">
+                                                    {event.description}
+                                                </p>
+
                                                 <p className="mt-4 font-body text-sm text-navy/70">
                                                     {formatDate(event.startAt)}
                                                     {" • "}
@@ -365,21 +251,20 @@ export default async function AdminPage() {
                                             <div className="flex flex-wrap gap-3">
                                                 <Link
                                                     href={`/admin/attendance/${event.id}`}
-                                                    className="inline-flex items-center justify-center rounded-xl border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                                                    className="inline-flex items-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                                 >
-                                                    Attendance →
+                                                    Attendance
+                                                    <ArrowRight size={14} className="ml-2" />
                                                 </Link>
 
                                                 <Link
                                                     href={`/admin/events/${event.id}/edit`}
-                                                    className="inline-flex items-center justify-center rounded-xl border-2 border-navy bg-cream px-5 py-3 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                                                    className="inline-flex items-center rounded-lg border-2 border-navy bg-white px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                                 >
                                                     Edit Event
                                                 </Link>
                                             </div>
                                         </div>
-
-                                        <div className="absolute -bottom-12 -right-8 h-28 w-28 rotate-12 rounded-3xl bg-lime/30 transition-transform duration-500 group-hover:rotate-6" />
                                     </article>
                                 );
                             })
