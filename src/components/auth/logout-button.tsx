@@ -2,7 +2,11 @@
 
 import { signOut } from "next-auth/react";
 
-export function LogoutButton() {
+interface BtnPropsLogout {
+    className?: string
+}
+
+export function LogoutButton({ className }: BtnPropsLogout) {
     const handleLogout = async () => {
         await signOut({
             callbackUrl: "/login",
@@ -13,9 +17,9 @@ export function LogoutButton() {
         <button
             type="button"
             onClick={handleLogout}
-            className="rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer"
+            className={`${className} rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-gray-100 cursor-pointer`}
         >
-            Logout
+            Logout →
         </button>
     );
 }

@@ -2,30 +2,26 @@
 
 import crypto from "crypto";
 import { redirect } from "next/navigation";
-
-import { prisma } from "@/lib/db/prisma";
-import { eventSchema } from "@/lib/validations/event";
-import { generateSlug } from "@/lib/utils/slug";
+import { parseJakartaDateTime } from "@/lib/utils/date";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { prisma } from "@/lib/db/prisma";
+import { generateSlug } from "@/lib/utils/slug";
+import { eventSchema } from "@/lib/validations/event";
 
-export async function createEvent(
-    formData: FormData,
-) {
+export async function createEvent(formData: FormData) {
     await requireAdmin();
 
     const rawData = {
         name: formData.get("name"),
         startAt: formData.get("startAt"),
+        description: formData.get("description"),
         endAt: formData.get("endAt"),
     };
 
-    const validation =
-        eventSchema.safeParse(rawData);
+    const validation = eventSchema.safeParse(rawData);
 
     if (!validation.success) {
-        throw new Error(
-            "Data event tidak valid",
-        );
+        throw new Error("Data event tidak valid");
     }
 
     const {
@@ -35,15 +31,15 @@ export async function createEvent(
         endAt,
     } = validation.data;
 
-    const slug = generateSlug(name);
+    const slug = await generateUniqueSlug(name);
 
     await prisma.event.create({
         data: {
             name,
             description: description || null,
             slug,
-            startAt: new Date(startAt),
-            endAt: new Date(endAt),
+            startAt: parseJakartaDateTime(startAt),
+            endAt: parseJakartaDateTime(endAt),
             isActive: true,
             scannerToken: crypto.randomUUID(),
         },
@@ -52,9 +48,7 @@ export async function createEvent(
     redirect("/admin/events");
 }
 
-export async function updateEvent(
-    formData: FormData,
-) {
+export async function updateEvent(formData: FormData) {
     await requireAdmin();
 
     const id = formData.get("id");
@@ -63,8 +57,7 @@ export async function updateEvent(
         throw new Error("ID event tidak valid");
     }
 
-    const isActive =
-        formData.get("isActive") === "on";
+    const isActive = formData.get("isActive") === "on";
 
     const rawData = {
         name: formData.get("name"),
@@ -73,13 +66,10 @@ export async function updateEvent(
         endAt: formData.get("endAt"),
     };
 
-    const validation =
-        eventSchema.safeParse(rawData);
+    const validation = eventSchema.safeParse(rawData);
 
     if (!validation.success) {
-        throw new Error(
-            "Data event tidak valid",
-        );
+        throw new Error("Data event tidak valid");
     }
 
     const {
@@ -89,6 +79,23 @@ export async function updateEvent(
         endAt,
     } = validation.data;
 
+    const existingEvent = await prisma.event.findFirst({
+        where: {
+            id,
+            deletedAt: null,
+        },
+    });
+
+    if (!existingEvent) {
+        throw new Error("Event tidak ditemukan");
+    }
+
+    let slug = existingEvent.slug;
+
+    if (name !== existingEvent.name) {
+        slug = await generateUniqueSlug(name, id);
+    }
+
     await prisma.event.update({
         where: {
             id,
@@ -96,8 +103,9 @@ export async function updateEvent(
         data: {
             name,
             description: description || null,
-            startAt: new Date(startAt),
-            endAt: new Date(endAt),
+            slug,
+            startAt: parseJakartaDateTime(startAt),
+            endAt: parseJakartaDateTime(endAt),
             isActive,
         },
     });
@@ -105,9 +113,7 @@ export async function updateEvent(
     redirect("/admin/events");
 }
 
-export async function deleteEvent(
-    formData: FormData,
-) {
+export async function deleteEvent(formData: FormData) {
     await requireAdmin();
 
     const id = formData.get("id");
@@ -116,18 +122,15 @@ export async function deleteEvent(
         throw new Error("ID event tidak valid");
     }
 
-    const existingEvent =
-        await prisma.event.findFirst({
-            where: {
-                id,
-                deletedAt: null,
-            },
-        });
+    const existingEvent = await prisma.event.findFirst({
+        where: {
+            id,
+            deletedAt: null,
+        },
+    });
 
     if (!existingEvent) {
-        throw new Error(
-            "Event tidak ditemukan",
-        );
+        throw new Error("Event tidak ditemukan");
     }
 
     await prisma.event.update({
@@ -141,4 +144,39 @@ export async function deleteEvent(
     });
 
     redirect("/admin/events");
+}
+
+async function generateUniqueSlug(
+    name: string,
+    excludeEventId?: string,
+): Promise<string> {
+    const baseSlug = generateSlug(name);
+
+    let slug = baseSlug;
+    let suffix = 2;
+
+    while (true) {
+        const existingEvent = await prisma.event.findFirst({
+            where: {
+                slug,
+                ...(excludeEventId
+                    ? {
+                        NOT: {
+                            id: excludeEventId,
+                        },
+                    }
+                    : {}),
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        if (!existingEvent) {
+            return slug;
+        }
+
+        slug = `${baseSlug}-${suffix}`;
+        suffix += 1;
+    }
 }

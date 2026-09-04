@@ -12,6 +12,7 @@ type ScannerPageProps = {
 export default async function ScannerRoutePage({
     params,
 }: ScannerPageProps) {
+
     const { token } = await params;
 
     const event = await prisma.event.findFirst({

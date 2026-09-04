@@ -26,7 +26,9 @@ const initialForm: FormData = {
 export function RegisterForm() {
     const router = useRouter();
 
-    const [form, setForm] = useState<FormData>(initialForm);
+    const [form, setForm] =
+        useState<FormData>(initialForm);
+
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -50,18 +52,25 @@ export function RegisterForm() {
         setLoading(true);
 
         try {
-            const response = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const response = await fetch(
+                "/api/auth/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+                    body: JSON.stringify(form),
                 },
-                body: JSON.stringify(form),
-            });
+            );
 
             const result = await response.json();
 
             if (!response.ok) {
-                setError(result.message ?? "Registrasi gagal.");
+                setError(
+                    result.message ??
+                    "Registrasi gagal.",
+                );
                 return;
             }
 
@@ -75,163 +84,203 @@ export function RegisterForm() {
         }
     }
 
+    const inputClass =
+        "w-full rounded-lg border-2 border-navy/20 bg-white px-4 py-3 font-body text-sm text-navy outline-none transition focus:border-navy focus:ring-4 focus:ring-lime/40";
+
+    const labelClass =
+        "mb-2 block font-body text-sm font-bold text-navy";
+
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-4 rounded-xl border bg-white p-6 shadow-sm"
+            className="rounded-2xl border-2 border-navy bg-cream p-6 shadow-[8px_8px_0_#0B1F3A] sm:p-8"
         >
             {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div className="mb-6 rounded-xl border-2 border-red-700/20 bg-red-100 px-4 py-3 text-sm font-medium text-red-800">
                     {error}
                 </div>
             )}
 
-            <div>
-                <label
-                    htmlFor="name"
-                    className="mb-1 block text-sm font-medium"
-                >
-                    Nama lengkap
-                </label>
+            <div className="grid gap-5 md:grid-cols-2">
+                {/* Nama */}
+                <div>
+                    <label
+                        htmlFor="name"
+                        className={labelClass}
+                    >
+                        Nama lengkap
+                    </label>
 
-                <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={form.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="Nama lengkap"
-                />
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value={form.name}
+                        onChange={handleChange}
+                        required
+                        autoComplete="name"
+                        placeholder="Nama lengkap"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Sekolah */}
+                <div>
+                    <label
+                        htmlFor="school"
+                        className={labelClass}
+                    >
+                        Sekolah
+                    </label>
+
+                    <input
+                        id="school"
+                        name="school"
+                        type="text"
+                        value={form.school}
+                        onChange={handleChange}
+                        required
+                        placeholder="Nama sekolah"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Jurusan */}
+                <div>
+                    <label
+                        htmlFor="major"
+                        className={labelClass}
+                    >
+                        Jurusan
+                    </label>
+
+                    <input
+                        id="major"
+                        name="major"
+                        type="text"
+                        value={form.major}
+                        onChange={handleChange}
+                        placeholder="Contoh: Elektronika Industri"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Kelas */}
+                <div>
+                    <label
+                        htmlFor="class"
+                        className={labelClass}
+                    >
+                        Kelas
+                    </label>
+
+                    <input
+                        id="class"
+                        name="class"
+                        type="text"
+                        value={form.class}
+                        onChange={handleChange}
+                        placeholder="Contoh: XII ELIND 1"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Nomor HP */}
+                <div>
+                    <label
+                        htmlFor="phone"
+                        className={labelClass}
+                    >
+                        Nomor HP
+                    </label>
+
+                    <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={form.phone}
+                        onChange={handleChange}
+                        required
+                        autoComplete="tel"
+                        placeholder="08xxxxxxxxxx"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Email */}
+                <div>
+                    <label
+                        htmlFor="email"
+                        className={labelClass}
+                    >
+                        Email
+                    </label>
+
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        required
+                        autoComplete="email"
+                        placeholder="nama@email.com"
+                        className={inputClass}
+                    />
+                </div>
+
+                {/* Password */}
+                <div className="md:col-span-2">
+                    <label
+                        htmlFor="password"
+                        className={labelClass}
+                    >
+                        Password
+                    </label>
+
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        required
+                        minLength={8}
+                        autoComplete="new-password"
+                        placeholder="Minimal 8 karakter"
+                        className={inputClass}
+                    />
+
+                    <p className="mt-2 font-body text-xs text-navy/50">
+                        Gunakan minimal 8 karakter.
+                    </p>
+                </div>
             </div>
 
-            <div>
-                <label
-                    htmlFor="school"
-                    className="mb-1 block text-sm font-medium"
+            <div className="mt-7">
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full rounded-lg border-2 border-navy bg-lime px-4 py-3.5 font-body text-sm font-bold text-navy shadow-[5px_5px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[3px_3px_0_#0B1F3A] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    Sekolah
-                </label>
-
-                <input
-                    id="school"
-                    name="school"
-                    type="text"
-                    value={form.school}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="Nama sekolah"
-                />
+                    {loading
+                        ? "Mendaftarkan..."
+                        : "Daftar Sekarang"}
+                </button>
             </div>
 
-            <div>
-                <label
-                    htmlFor="major"
-                    className="mb-1 block text-sm font-medium"
+            <div className="mt-5 border-t border-navy/10 pt-4 text-center">
+                <p className="font-body text-sm text-navy/60">
+                    Sudah punya akun?
+                </p>
+
+                <a
+                    href="/login"
+                    className="mt-1 inline-block font-body text-sm font-bold text-navy underline decoration-lime decoration-2 underline-offset-4 transition hover:text-navy/70"
                 >
-                    Jurusan
-                </label>
-
-                <input
-                    id="major"
-                    name="major"
-                    type="text"
-                    value={form.major}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="Contoh: Rekayasa Perangkat Lunak"
-                />
+                    Login di sini →
+                </a>
             </div>
-
-            <div>
-                <label
-                    htmlFor="class"
-                    className="mb-1 block text-sm font-medium"
-                >
-                    Kelas
-                </label>
-
-                <input
-                    id="class"
-                    name="class"
-                    type="text"
-                    value={form.class}
-                    onChange={handleChange}
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="Contoh: XII RPL 1"
-                />
-            </div>
-
-            <div>
-                <label
-                    htmlFor="phone"
-                    className="mb-1 block text-sm font-medium"
-                >
-                    Nomor HP
-                </label>
-
-                <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={form.phone}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="08xxxxxxxxxx"
-                />
-            </div>
-
-            <div>
-                <label
-                    htmlFor="email"
-                    className="mb-1 block text-sm font-medium"
-                >
-                    Email
-                </label>
-
-                <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="nama@email.com"
-                />
-            </div>
-
-            <div>
-                <label
-                    htmlFor="password"
-                    className="mb-1 block text-sm font-medium"
-                >
-                    Password
-                </label>
-
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                    minLength={8}
-                    className="w-full rounded-lg border px-3 py-2 outline-none focus:ring-2"
-                    placeholder="Minimal 8 karakter"
-                />
-            </div>
-
-            <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-lg bg-black px-4 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {loading ? "Mendaftarkan..." : "Daftar"}
-            </button>
         </form>
     );
 }

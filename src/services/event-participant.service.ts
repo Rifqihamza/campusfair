@@ -4,6 +4,8 @@ import { Prisma } from "../../prisma/generated/client";
 
 import { prisma } from "@/lib/db/prisma";
 
+const MAX_CODE_RETRIES = 5;
+
 export async function registerParticipantToEvent(
     userId: string,
     eventId: string,
@@ -51,47 +53,61 @@ export async function registerParticipantToEvent(
         return existingParticipant;
     }
 
-    const participantCode =
-        await generateParticipantCode(
-            event.id,
-            event.startAt,
-        );
+    for (
+        let attempt = 1;
+        attempt <= MAX_CODE_RETRIES;
+        attempt++
+    ) {
+        const participantCode =
+            await generateParticipantCode(
+                event.id,
+                event.startAt,
+            );
 
-    const qrToken =
-        crypto.randomBytes(32).toString("hex");
+        const qrToken =
+            crypto.randomBytes(32).toString("hex");
 
-    try {
-        return await prisma.eventParticipant.create({
-            data: {
-                eventId: event.id,
-                participantId: participant.id,
-                participantCode,
-                qrToken,
-            },
-        });
-    } catch (error) {
-        if (
-            error instanceof
-            Prisma.PrismaClientKnownRequestError &&
-            error.code === "P2002"
-        ) {
-            const existingParticipant =
-                await prisma.eventParticipant.findFirst({
-                    where: {
-                        eventId: event.id,
-                        participantId:
-                            participant.id,
-                        deletedAt: null,
-                    },
-                });
+        try {
+            return await prisma.eventParticipant.create({
+                data: {
+                    eventId: event.id,
+                    participantId: participant.id,
+                    participantCode,
+                    qrToken,
+                },
+            });
+        } catch (error) {
+            if (
+                error instanceof
+                Prisma.PrismaClientKnownRequestError &&
+                error.code === "P2002"
+            ) {
+                const existingParticipant =
+                    await prisma.eventParticipant.findFirst({
+                        where: {
+                            eventId: event.id,
+                            participantId:
+                                participant.id,
+                            deletedAt: null,
+                        },
+                    });
 
-            if (existingParticipant) {
-                return existingParticipant;
+                if (existingParticipant) {
+                    return existingParticipant;
+                }
+
+                if (attempt < MAX_CODE_RETRIES) {
+                    continue;
+                }
             }
-        }
 
-        throw error;
+            throw error;
+        }
     }
+
+    throw new Error(
+        "PARTICIPANT_REGISTRATION_FAILED",
+    );
 }
 
 async function generateParticipantCode(

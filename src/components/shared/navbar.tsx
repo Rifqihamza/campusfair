@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import SharedButton from "./button"
+import SharedButton from "./link-button"
 export default function Navbar() {
     const navLink = [
         { title: "Home", link: "/" },
