@@ -4,16 +4,18 @@ import { QRCodeSVG } from "qrcode.react";
 
 type ParticipantQrProps = {
     value: string;
-    participantCode: string;
+    participantCode?: string;
+    className?: string
 };
 
 export function ParticipantQr({
     value,
     participantCode,
+    className = " "
 }: ParticipantQrProps) {
     return (
-        <section className="rounded-3xl border-2 border-navy bg-sky p-5 shadow-[0px_6px_0_#0B1F3A] sm:p-6">
-            <div className="text-center md:text-left">
+        <section className={["rounded-3xl border-2 border-navy bg-sky p-5 shadow-[0px_6px_0_#0B1F3A] sm:p-6", className].join(" ")}>
+            <div className="text-center">
                 <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-navy/65">
                     YOUR TICKET
                 </p>
@@ -22,7 +24,7 @@ export function ParticipantQr({
                     QR CODE
                 </h2>
 
-                <p className="mt-3 text-center font-body text-md leading-5 text-navy md:text-left">
+                <p className="mt-3 text-center font-body text-md leading-5 text-navy">
                     Tunjukkan QR code ini kepada panitia saat check-in dan
                     check-out.
                 </p>
@@ -32,7 +34,7 @@ export function ParticipantQr({
                 <div className="rounded-2xl border-4 border-navy bg-white p-5">
                     <QRCodeSVG
                         value={value}
-                        size={200}
+                        size={250}
                         level="H"
                         marginSize={2}
                     />

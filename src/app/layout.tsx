@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="en"
       className={`${oswald.variable} ${barlow.variable} ${bebasNeue.variable} h-full antialiased`}
     >
-      <body className="relativ w-full h-auto">
+      <body>
         {children}
       </body>
     </html>

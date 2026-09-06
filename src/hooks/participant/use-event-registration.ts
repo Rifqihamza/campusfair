@@ -33,7 +33,7 @@ export function useEventRegistration(eventId: string) {
                 return;
             }
 
-            router.refresh();
+            router.push(`/events/${eventId}/ticket`);
         } catch {
             setError("Terjadi kesalahan. Silakan coba lagi.");
         } finally {

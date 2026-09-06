@@ -25,7 +25,7 @@ export function AboutSection() {
                                 menuju masa depanmu.
                             </h2>
                         </div>
-                        <div className="relative overflow-hidden border-3 border-navy bg-white mt-5 p-1 shadow-[6px_6px_0_#0B1F3A] sm:border-4 sm:shadow-[-8px_8px_0_#0B1F3A] w-[80%]">
+                        <div className="relative overflow-hidden border-3 border-navy bg-white mt-5 p-1 shadow-[6px_6px_0_#0B1F3A] sm:border-4 sm:shadow-[-8px_8px_0_#0B1F3A] w-full">
                             <Image
                                 src="/bersama.jpg"
                                 alt="Dokumentasi Campus Fair"
@@ -64,7 +64,7 @@ export function AboutSection() {
             </div>
 
             {/* Campus logo wall */}
-            <div className="pointer-events-none z-10 mx-auto -mt-70 h-[35em] w-full sticky lg:absolute bottom-0 lg:bottom-0 lg:-right-1/4 lg:mt-0 lg:h-full lg:w-full">
+            <div className="pointer-events-none z-10 mx-auto -mt-70 h-[35em] w-full sticky lg:absolute bottom-0 right-10 lg:bottom-0 lg:-right-1/4 lg:mt-0 lg:h-full lg:w-full">
                 <DriftWall
                     items={campusLogo}
                     columns={3}
@@ -78,13 +78,13 @@ export function AboutSection() {
                     speed={42}
                     direction="up"
                     variance={0.45}
-                    parallax={0.6}
+                    parallax={0.10}
                     lift={64}
-                    fade={0.6}
+                    fade={0.2}
                     dim={0.55}
                     overlayColor="#ffffff"
                     radius={100}
-                    roll={2}
+                    roll={6}
                     pauseOnHover={false}
                     grayscale={false}
                 />

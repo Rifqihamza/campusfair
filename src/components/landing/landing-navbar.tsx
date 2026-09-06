@@ -1,9 +1,9 @@
 "use client";
 
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { X, Menu } from "lucide-react";
 
 export function LandingNavbar() {
     const [scrolled, setIsScrolled] = useState(false);
@@ -21,10 +21,7 @@ export function LandingNavbar() {
         });
 
         return () => {
-            window.removeEventListener(
-                "scroll",
-                handleScroll,
-            );
+            window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
@@ -37,11 +34,9 @@ export function LandingNavbar() {
             <div
                 className={[
                     "mx-auto transition-all duration-500",
-                    // Desktop
-                    ,
                     scrolled
-                        ? "px-4 py-3 md:px-6 md:py-4 md:w-7xl"
-                        : "px-4 py-2 md:px-6 md:py-2 md:w-full",
+                        ? "px-4 py-3 md:w-7xl md:px-6 md:py-4"
+                        : "px-4 py-2 md:w-full md:px-6 md:py-2",
                 ].join(" ")}
             >
                 <div
@@ -50,7 +45,7 @@ export function LandingNavbar() {
                         "px-4 py-3 md:px-3 md:py-2",
                         "transition-all duration-500",
                         scrolled
-                            ? "rounded-2xl bg-campus-blue shadow-[0_2px_6px_0] shadow-navy backdrop-blur-xl"
+                            ? "rounded-xl bg-campus-blue shadow-[0_2px_6px_0] shadow-navy"
                             : "bg-campus-blue/5",
                     ].join(" ")}
                 >
@@ -61,31 +56,12 @@ export function LandingNavbar() {
                         className="flex items-center gap-2.5 md:gap-3"
                     >
                         <Image
-                            src="/logo.jpg"
-                            alt="Logo IKAMAMIIND 2100"
-                            width={50}
-                            height={50}
-                            priority
-                            className="h-10 w-10 rounded-full object-cover md:h-12.5 md:w-12.5"
+                            src="/cf-banner.png"
+                            alt="Banner Campus Fair 2027"
+                            width={scrolled ? 100 : 150}
+                            height={scrolled ? 100 : 150}
+                            className={`h-auto w-35 md:w-full ${scrolled ? 'transition-all duration-500' : 'transtision-all duration-500'}`}
                         />
-
-                        <span
-                            className={[
-                                "flex flex-col -space-y-1.5 font-display tracking-wide md:-space-y-2",
-                                "transition-colors duration-300",
-                                scrolled
-                                    ? "text-white"
-                                    : "text-white",
-                            ].join(" ")}
-                        >
-                            <span className="text-lg md:text-xl">
-                                IKAMAMIIND
-                            </span>
-
-                            <span className="text-2xl md:text-2xl">
-                                2100
-                            </span>
-                        </span>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -102,6 +78,7 @@ export function LandingNavbar() {
                         >
                             Home
                         </a>
+
                         <a
                             href="#about"
                             className={[
@@ -143,16 +120,17 @@ export function LandingNavbar() {
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden items-center gap-4 md:flex pr-5">
+                    <div className="hidden items-center gap-4 pr-5 md:flex">
                         <Link
                             href="/login"
-                            className={`rounded-lg bg-pink px-5 py-2.5 font-body text-sm font-bold text-cream hover:bg-navy hover:text-cream transition-all duration-300 ${scrolled ? "border-none" : "border-none"}`}                        >
+                            className="rounded-lg bg-pink px-5 py-2.5 font-body text-sm font-bold text-cream transition-all duration-300 hover:bg-navy hover:text-cream"
+                        >
                             Login
                         </Link>
 
                         <Link
                             href="/register"
-                            className={`rounded-lg bg-lime px-5 py-2.5 font-body text-sm font-bold text-navy hover:bg-navy hover:text-cream transition-all duration-300 ${scrolled ? "border-none" : "border-none"}`}
+                            className="rounded-lg bg-lime px-5 py-2.5 font-body text-sm font-bold text-navy transition-all duration-300 hover:bg-navy hover:text-cream"
                         >
                             Daftar
                         </Link>
@@ -161,15 +139,9 @@ export function LandingNavbar() {
                     {/* Mobile Menu Button */}
                     <button
                         type="button"
-                        aria-label={
-                            menuOpen
-                                ? "Tutup menu"
-                                : "Buka menu"
-                        }
+                        aria-label={menuOpen ? "Tutup menu" : "Buka menu"}
                         aria-expanded={menuOpen}
-                        onClick={() =>
-                            setMenuOpen((prev) => !prev)
-                        }
+                        onClick={() => setMenuOpen((prev) => !prev)}
                         className={[
                             "flex h-10 w-10 items-center justify-center rounded-lg md:hidden",
                             "transition-colors duration-300",
@@ -219,7 +191,7 @@ export function LandingNavbar() {
 
                             <div className="my-2 border-t border-navy/10" />
 
-                            <div className="flex flex-row items-center justify-between w-full gap-3">
+                            <div className="flex w-full flex-row items-center justify-between gap-3">
                                 <Link
                                     href="/login"
                                     onClick={closeMenu}
@@ -240,6 +212,6 @@ export function LandingNavbar() {
                     </div>
                 </div>
             </div>
-        </header >
+        </header>
     );
 }

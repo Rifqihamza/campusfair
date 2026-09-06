@@ -13,6 +13,8 @@ import {
     type PointerEvent,
 } from "react";
 
+import Image from "next/image";
+
 import "@/app/globals.css";
 
 type DriftWallItem = {
@@ -658,12 +660,14 @@ const DriftWall = ({
     ) => {
         const inner = (
             <span className="drift-wall__inner">
-                <img
+                <Image
                     src={item.image}
                     alt={item.title ?? ""}
                     loading="lazy"
                     decoding="async"
                     draggable={false}
+                    fill
+                    className="p-4 bg-white object-contain"
                 />
 
                 <span

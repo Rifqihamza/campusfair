@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function RegistrationCta() {
     return (
-        <section className="relative isolate overflow-hidden bg-campus-blue py-8 text-white md:py-[144px]">
+        <section className="relative isolate overflow-hidden py-8 text-white md:py-[144px]">
             <div className="relative z-10 mx-auto max-w-5xl px-6 text-center lg:px-8">
                 <p className="font-body text-sm font-bold uppercase tracking-[0.2em] text-lime">
                     READY?
@@ -13,7 +13,7 @@ export function RegistrationCta() {
                     <br />
                     CHAPTER
                     <br />
-                    STARTS NOW.
+                    STARTS HERE.
                 </h2>
 
                 <p className="mx-auto mt-6 max-w-xl font-body text-xl leading-6 text-white/90">
@@ -25,7 +25,7 @@ export function RegistrationCta() {
 
                 <Link
                     href="/register"
-                    className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[6px_6px_0_#0B1F3A] transition-[transform,box-shadow] duration-300 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0_#0B1F3A]"
+                    className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[0px_6px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_4px_0_#0B1F3A]"
                 >
                     Daftar Sekarang
                 </Link>

@@ -3,10 +3,11 @@
 import { deleteEvent } from "@/lib/actions/admin/deleteEvent";
 type Props = {
     id: string;
+    className?: string;
 };
 
 export function DeleteEventButton({
-    id,
+    id, className = " "
 }: Props) {
     return (
         <form
@@ -30,7 +31,7 @@ export function DeleteEventButton({
 
             <button
                 type="submit"
-                className="rounded-lg border border-red-500 px-4 py-2 text-sm text-red-600 cursor-pointer"
+                className={["rounded-lg border border-red-500 px-4 py-2 text-sm text-red-600 cursor-pointer", className].join(" ")}
             >
                 Hapus
             </button>
