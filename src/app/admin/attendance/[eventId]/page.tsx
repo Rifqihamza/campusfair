@@ -123,14 +123,14 @@ export default async function AttendancePage({ params }: Props) {
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <a
                                 href={`/api/admin/attendance/${eventId}/export-excel`}
-                                className="inline-flex items-center justify-center rounded-xl border-2 border-navy bg-lime px-4 py-2.5 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                                className="inline-flex items-center justify-center rounded-md border-2 border-navy bg-lime px-4 py-2.5 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                             >
                                 Export Excel ↓
                             </a>
 
                             <a
                                 href={`/api/admin/attendance/${eventId}/export-csv`}
-                                className="inline-flex items-center justify-center rounded-xl border-2 border-navy bg-cream px-4 py-2.5 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                                className="inline-flex items-center justify-center rounded-md border-2 border-navy bg-cream px-4 py-2.5 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                             >
                                 Export CSV ↓
                             </a>
@@ -234,10 +234,10 @@ export default async function AttendancePage({ params }: Props) {
                                                     <span
                                                         className={`inline-block rounded-full border-2 border-navy px-3 py-1 font-body text-xs font-bold ${status ===
                                                             "DI VENUE"
-                                                            ? "bg-lime text-navy"
+                                                            ? "bg-campus-blue text-navy"
                                                             : status ===
                                                                 "SUDAH KELUAR"
-                                                                ? "bg-cream text-navy"
+                                                                ? "bg-lime text-navy"
                                                                 : "bg-navy text-cream"
                                                             }`}
                                                     >

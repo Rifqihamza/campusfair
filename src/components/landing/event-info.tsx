@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Reveal } from "../shared/reveal";
 
 export function EventInfoSection() {
     return (
@@ -35,7 +36,7 @@ export function EventInfoSection() {
 
             <div className="relative z-10 mx-auto mb-9 max-w-7xl px-6 lg:px-8">
                 <div className="grid gap-12 lg:grid-cols-[1fr_0.8fr] lg:items-end lg:gap-8">
-                    <div>
+                    <Reveal>
                         {/* Date sticker */}
                         <div className="mb-5 inline-flex -rotate-2 items-center border-2 border-navy bg-navy px-4 py-2 shadow-[4px_4px_0_#F7F3E8]">
                             <span className="font-body text-xs font-black uppercase tracking-[0.18em] text-lime">
@@ -54,10 +55,19 @@ export function EventInfoSection() {
                             <br />
                             2027
                         </h2>
-                    </div>
+                    </Reveal>
 
-                    <div>
+                    <Reveal delay={120}>
                         {/* Info blocks */}
+                        <div className="border-t-2 border-navy py-5">
+                            <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-navy/50">
+                                Event
+                            </p>
+
+                            <p className="mt-2 font-heading text-2xl font-bold text-navy">
+                                Campus Fair 2027
+                            </p>
+                        </div>
                         <div className="border-t-2 border-navy py-5">
                             <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-navy/50">
                                 WAKTU
@@ -99,7 +109,7 @@ export function EventInfoSection() {
                             Daftar Sekarang
                             <ArrowRight size={20} />
                         </Link>
-                    </div>
+                    </Reveal>
                 </div>
             </div>
 

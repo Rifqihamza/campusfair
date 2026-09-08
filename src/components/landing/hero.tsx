@@ -1,6 +1,6 @@
 import { ArrowDown } from "lucide-react";
 import Image from "next/image";
-
+import { Reveal } from "../shared/reveal";
 
 export function Hero() {
     return (
@@ -29,17 +29,17 @@ export function Hero() {
             {/* Main Container */}
             <div className="w-full max-w-7xl h-dvh mx-auto flex items-center justify-center relative">
                 {/* Typography */}
-                <span
-                    className="text-[65px] md:text-[160px] tracking-tight text-sky font-display w-full absolute top-[30%] md:top-1/4 -translate-y-1/2 flex items-center justify-center">
+                <Reveal className="text-[65px] md:text-[160px] tracking-tight text-sky font-display w-full absolute top-[30%] md:top-1/4 -translate-y-1/2 flex items-center justify-center">
                     YOUR NEXT CHAPTER
-                </span>
+                </Reveal>
 
-                <span
+                <Reveal
+                    delay={180}
                     className="z-10 text-[80px] md:text-[160px] tracking-wide text-sky font-display w-full absolute bottom-1/3 md:bottom-1/4 translate-y-1/2 flex items-center justify-center">
                     STARTS HERE.
-                </span>
+                </Reveal>
 
-                <div className="relative z-30 w-[min(88vw,540px)] -rotate-2 md:w-[min(70vw,560px)] -mt-10">
+                <Reveal delay={120} className="relative z-30 w-[min(88vw,540px)] -rotate-2 md:w-[min(70vw,560px)] -mt-10">
                     {/* Offset shadow */}
                     <div className="absolute -bottom-1.5 -left-1.5 h-full w-full rotate-2 bg-lime sm:-bottom-3 sm:-left-3" />
 
@@ -78,7 +78,7 @@ export function Hero() {
                             className="h-auto w-32 sm:w-36 md:w-44 lg:w-50"
                         />
                     </div>
-                </div>
+                </Reveal>
                 {/* Bottom content */}
                 <div className="flex justify-end absolute top-1/2 right-0">
                     {/* Alumni label */}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Reveal } from "../shared/reveal";
 
 export function RegistrationCta() {
     return (
@@ -33,39 +34,42 @@ export function RegistrationCta() {
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 mx-auto max-w-5xl px-6 text-center lg:px-8">
-                <div className="mx-auto mb-5 inline-flex -rotate-2 border-2 border-navy bg-lime px-4 py-2 shadow-[4px_4px_0_#F7F3E8]">
-                    <span className="font-body text-xs font-black uppercase tracking-[0.18em] text-navy">
-                        ✦ CAMPUS FAIR 2027 ✦
-                    </span>
+            <Reveal>
+
+                <div className="relative z-10 mx-auto max-w-5xl px-6 text-center lg:px-8">
+                    <div className="mx-auto mb-5 inline-flex -rotate-2 border-2 border-navy bg-lime px-4 py-2 shadow-[4px_4px_0_#F7F3E8]">
+                        <span className="font-body text-xs font-black uppercase tracking-[0.18em] text-navy">
+                            ✦ CAMPUS FAIR 2027 ✦
+                        </span>
+                    </div>
+
+                    <p className="font-body text-sm font-bold uppercase tracking-[0.2em] text-lime">
+                        READY?
+                    </p>
+
+                    <h2 className="mt-5 font-display text-[clamp(4.5rem,12vw,9rem)] leading-[0.78] tracking-tight">
+                        YOUR NEXT
+                        <br />
+                        CHAPTER
+                        <br />
+                        STARTS HERE.
+                    </h2>
+
+                    <p className="mx-auto mt-6 max-w-xl font-body text-xl leading-6 text-white/90">
+                        Jangan lewatkan kesempatan untuk
+                        menjadi bagian dari Campus Fair.
+                        Daftarkan dirimu dan mulai langkah
+                        berikutnya.
+                    </p>
+
+                    <Link
+                        href="/register"
+                        className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[0px_6px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-y-0.5 hover:shadow-[0px_4px_0_#0B1F3A]"
+                    >
+                        Daftar Sekarang →
+                    </Link>
                 </div>
-
-                <p className="font-body text-sm font-bold uppercase tracking-[0.2em] text-lime">
-                    READY?
-                </p>
-
-                <h2 className="mt-5 font-display text-[clamp(4.5rem,12vw,9rem)] leading-[0.78] tracking-tight">
-                    YOUR NEXT
-                    <br />
-                    CHAPTER
-                    <br />
-                    STARTS HERE.
-                </h2>
-
-                <p className="mx-auto mt-6 max-w-xl font-body text-xl leading-6 text-white/90">
-                    Jangan lewatkan kesempatan untuk
-                    menjadi bagian dari Campus Fair.
-                    Daftarkan dirimu dan mulai langkah
-                    berikutnya.
-                </p>
-
-                <Link
-                    href="/register"
-                    className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[0px_6px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-y-0.5 hover:shadow-[0px_4px_0_#0B1F3A]"
-                >
-                    Daftar Sekarang →
-                </Link>
-            </div>
-        </section>
+            </Reveal>
+        </section >
     );
 }

@@ -1,6 +1,7 @@
 import DriftWall from "@/components/shared/driftwall";
 import Image from "next/image";
 import { campusLogo } from "@/data/campusLogo";
+import { Reveal } from "../shared/reveal";
 
 export function AboutSection() {
     return (
@@ -12,7 +13,7 @@ export function AboutSection() {
 
             <div className="relative z-20 mx-auto w-full max-w-7xl px-6 lg:px-5">
                 <div className="grid gap-10 lg:grid-cols-[0.6fr_0.5fr] lg:gap-16">
-                    <div>
+                    <Reveal>
                         {/* Heading */}
                         <div>
                             <div className="relative">
@@ -33,6 +34,7 @@ export function AboutSection() {
                                 </h2>
                             </div>
                         </div>
+
                         <div className="relative mt-5 w-full max-w-full -rotate-1 overflow-hidden border-3 border-navy bg-white p-1 shadow-[6px_6px_0_#0B1F3A] sm:border-4 sm:shadow-[-8px_8px_0_#0B1F3A]">                            <div className="absolute right-5 top-5 z-20 rotate-6 border-2 border-navy bg-pink px-3 py-2 shadow-[3px_3px_0_#0B1F3A]">
                             <p className="font-body text-[10px] font-black uppercase tracking-wider text-navy">
                                 MEMORIES ✦
@@ -50,37 +52,40 @@ export function AboutSection() {
 
                             <div className="pointer-events-none absolute inset-1 bg-[radial-gradient(circle_at_1px_1px,#0B1F3A_1px,transparent_0)] bg-size-[5px_5px] opacity-30 mix-blend-multiply sm:inset-1.5" />
                         </div>
-                    </div>
+                    </Reveal>
 
                     {/* Description */}
-                    <div className="max-w-3xl">
-                        <p className="font-body text-lg leading-6 text-navy/70 md:text-xl">
-                            <b>Campus Fair</b> merupakan agenda tahunan
-                            yang diadakan oleh <b>IKAMAMIIND 2100</b> untuk
-                            membantu mempersiapkan siswa dalam
-                            memasuki jenjang perkuliahan.
-                        </p>
+                    <Reveal delay={120}>
 
-                        <p className="mt-5 font-body text-lg leading-6 text-navy/70 md:text-xl">
-                            Lewat Campus Fair, kamu bisa mengenal
-                            lebih jauh tentang dunia perkuliahan
-                            dan mulai mendapatkan gambaran tentang
-                            langkah yang ingin kamu ambil setelah
-                            lulus.
-                        </p>
-
-                        <div className="relative mt-6 min-h-28">
-                            <p className="max-w-full font-body text-lg font-semibold leading-6 text-navy md:text-xl">
-                                Jadi, sudah siap menemukan pilihanmu?
+                        <div className="max-w-3xl">
+                            <p className="font-body text-lg leading-6 text-navy/70 md:text-xl">
+                                <b>Campus Fair</b> merupakan agenda tahunan
+                                yang diadakan oleh <b>IKAMAMIIND 2100</b> untuk
+                                membantu mempersiapkan siswa dalam
+                                memasuki jenjang perkuliahan.
                             </p>
 
-                            <div className="absolute right-0 top-14 -rotate-12 border-2 border-navy bg-lime px-2 py-2.5 shadow-[4px_4px_0_#0B1F3A] sm:right-4 sm:top-10 sm:px-3 sm:py-3">
-                                <p className="whitespace-nowrap font-heading text-xs font-bold text-navy sm:text-sm md:text-lg">
-                                    FIND YOUR NEXT STEP! ↗
+                            <p className="mt-5 font-body text-lg leading-6 text-navy/70 md:text-xl">
+                                Lewat Campus Fair, kamu bisa mengenal
+                                lebih jauh tentang dunia perkuliahan
+                                dan mulai mendapatkan gambaran tentang
+                                langkah yang ingin kamu ambil setelah
+                                lulus.
+                            </p>
+
+                            <div className="relative mt-6 min-h-28">
+                                <p className="max-w-full font-body text-lg font-semibold leading-6 text-navy md:text-xl">
+                                    Jadi, sudah siap menemukan pilihanmu?
                                 </p>
+
+                                <div className="absolute right-0 top-14 -rotate-12 border-2 border-navy bg-lime px-2 py-2.5 shadow-[4px_4px_0_#0B1F3A] sm:right-4 sm:top-10 sm:px-3 sm:py-3">
+                                    <p className="whitespace-nowrap font-heading text-xs font-bold text-navy sm:text-sm md:text-lg">
+                                        FIND YOUR NEXT STEP! ↗
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </Reveal>
                 </div>
             </div>
 
@@ -128,6 +133,6 @@ export function AboutSection() {
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-64 bg-linear-to-b from-transparent via-cream to-sky" />
 
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-linear-to-b from-transparent to-sky" />
-        </section>
+        </section >
     );
 }

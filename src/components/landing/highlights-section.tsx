@@ -1,6 +1,6 @@
 import { GraphicCard } from "@/components/shared/graphic-card";
 import { highlightsData } from "@/data/highlights";
-
+import { Reveal } from "../shared/reveal";
 export function HighlightsSection() {
     return (
         <section
@@ -32,7 +32,7 @@ export function HighlightsSection() {
             <div className="pointer-events-none absolute left-[18%] top-16 z-0 hidden h-3 w-3 rounded-full bg-pink lg:block" />
             <div className="pointer-events-none absolute right-[20%] top-[34%] z-0 hidden h-4 w-4 rounded-full bg-lime lg:block" />
 
-            <div className="relative z-10 mx-auto mb-9 max-w-7xl px-6 lg:px-8">
+            <Reveal className="relative z-10 mx-auto mb-9 max-w-7xl px-6 lg:px-8">
                 <div className="max-w-3xl">
                     {/* Sticker */}
                     <div className="mb-5 inline-flex -rotate-2 items-center border-2 border-navy bg-lime px-3 py-1.5 shadow-[3px_3px_0_#0B1F3A]">
@@ -60,41 +60,46 @@ export function HighlightsSection() {
                 </div>
 
                 <div className="relative mt-10 grid gap-6 md:grid-cols-3">
-                    {highlightsData.map((item) => (
-                        <GraphicCard
+                    {highlightsData.map((item, index) => (
+                        <Reveal
                             key={item.number}
-                            accent={
-                                item.accent as
-                                | "lime"
-                                | "yellow"
-                                | "cyan"
-                                | "pink"
-                            }
-                            rotate={
-                                item.rotate as
-                                | "0"
-                                | "-2"
-                                | "-1"
-                                | "1"
-                                | "2"
-                            }
-                            className="p-6 md:p-7"
+                            delay={index * 90}
                         >
-                            <span className="font-display text-6xl text-navy">
-                                {item.number}
-                            </span>
+                            <GraphicCard
+                                accent={
+                                    item.accent as
+                                    | "lime"
+                                    | "yellow"
+                                    | "cyan"
+                                    | "pink"
+                                }
+                                rotate={
+                                    item.rotate as
+                                    | "0"
+                                    | "-2"
+                                    | "-1"
+                                    | "1"
+                                    | "2"
+                                }
+                                className="p-6 md:p-7"
+                            >
+                                <span className="font-display text-6xl text-navy">
+                                    {item.number}
+                                </span>
 
-                            <h3 className="mt-6 font-heading text-2xl font-bold text-navy">
-                                {item.title}
-                            </h3>
+                                <h3 className="mt-6 font-heading text-2xl font-bold text-navy">
+                                    {item.title}
+                                </h3>
 
-                            <p className="mt-3 font-body text-lg leading-5 text-navy">
-                                {item.description}
-                            </p>
-                        </GraphicCard>
+                                <p className="mt-3 font-body text-lg leading-5 text-navy">
+                                    {item.description}
+                                </p>
+                            </GraphicCard>
+                        </Reveal>
+
                     ))}
                 </div>
-            </div>
+            </Reveal>
 
             {/* Decorative shapes */}
             <div className="pointer-events-none absolute right-3 top-20 z-0 h-7 w-7 rotate-12 rounded-full border-3 border-navy bg-lime sm:left-6 sm:h-11 sm:w-11 lg:left-[4%] lg:top-24" />
