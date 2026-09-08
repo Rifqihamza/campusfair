@@ -5,7 +5,7 @@ import { ParticipantHero } from "@/components/participant/participant-hero";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 import { getEvents } from "@/services/participant/get-events";
-
+export const dynamic = "force-dynamic"
 export default async function EventsPage() {
     const events = await getEvents();
 
