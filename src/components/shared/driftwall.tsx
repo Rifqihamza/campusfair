@@ -1,7 +1,6 @@
 
 "use client"
 
-
 import {
     useCallback,
     useEffect,
@@ -15,7 +14,7 @@ import {
 
 import Image from "next/image";
 
-import "@/app/globals.css";
+import "./driftwall.css";
 
 type DriftWallItem = {
     image: string;
@@ -667,7 +666,7 @@ const DriftWall = ({
                     decoding="async"
                     draggable={false}
                     fill
-                    className="p-4 bg-white object-contain"
+                    className="p-4 bg-white object-contain rounded-full"
                 />
 
                 <span

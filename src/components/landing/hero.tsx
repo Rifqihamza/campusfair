@@ -51,7 +51,7 @@ export function Hero() {
                             width={1280}
                             height={720}
                             priority
-                            className="aspect-video w-full object-cover grayscale contrast-125"
+                            className="aspect-video w-full object-cover contrast-125"
                         />
 
                         {/* Halftone */}

@@ -60,7 +60,7 @@ export function LandingFooter() {
                                 YOUR NEXT CHAPTER
                             </p>
 
-                            <h2 className="mt-1 font-display text-3xl font-extrabold uppercase leading-[0.85] tracking-tight text-sky sm:text-4xl">
+                            <h2 className="mt-1 font-display text-3xl font-extrabold uppercase leading-[0.85] tracking-wide text-sky sm:text-4xl">
                                 STARTS HERE.
                             </h2>
                         </div>

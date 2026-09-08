@@ -3,7 +3,43 @@ import Link from "next/link";
 export function RegistrationCta() {
     return (
         <section className="relative isolate overflow-hidden py-8 text-white md:py-[144px]">
+            {/* Decorative shapes */}
+            <div className="pointer-events-none absolute -left-14 top-12 h-32 w-32 rounded-full border-4 border-lime/80 sm:-left-20 sm:top-16 sm:h-48 sm:w-48 sm:border-[5px] lg:h-64 lg:w-64" />
+
+            <div className="pointer-events-none absolute -right-14 bottom-0 h-36 w-36 rotate-12 rounded-xl border-3 border-yellow bg-pink sm:-right-20 sm:h-52 sm:w-52 sm:border-4 lg:-right-24 lg:h-72 lg:w-72" />
+
+            <div className="pointer-events-none absolute left-5 top-[18%] rotate-12 font-display text-3xl font-black text-yellow sm:left-[12%] sm:text-5xl">
+                ✦
+            </div>
+
+            <div className="pointer-events-none absolute right-5 top-[22%] -rotate-12 font-display text-4xl font-black text-lime sm:right-[14%] sm:text-6xl">
+                +
+            </div>
+
+
+            <div className="pointer-events-none absolute right-4 top-[48%] h-10 w-10 -rotate-12 rounded-full border-3 border-lime bg-campus-blue sm:right-[6%] sm:h-12 sm:w-12" />
+
+            <div className="pointer-events-none absolute left-[18%] bottom-[18%] h-3 w-3 rounded-full bg-pink sm:h-5 sm:w-5" />
+
+            <div className="pointer-events-none absolute right-[24%] bottom-[14%] h-3 w-3 rounded-full bg-yellow sm:h-4 sm:w-4" />
+
+            <div className="pointer-events-none absolute left-5 bottom-[8%] h-7 w-7 rotate-45 border-3 border-lime sm:left-[6%] sm:h-10 sm:w-10" />
+
+            {/* Decorative sticker */}
+            <div className="pointer-events-none absolute left-[8%] top-[48%] hidden -rotate-6 border-2 border-navy bg-yellow px-4 py-2 shadow-[4px_4px_0_#B5FF2C] lg:block">
+                <span className="font-body text-xs font-black uppercase tracking-[0.15em] text-navy">
+                    LET&apos;S GO! ↗
+                </span>
+            </div>
+
+            {/* Main content */}
             <div className="relative z-10 mx-auto max-w-5xl px-6 text-center lg:px-8">
+                <div className="mx-auto mb-5 inline-flex -rotate-2 border-2 border-navy bg-lime px-4 py-2 shadow-[4px_4px_0_#F7F3E8]">
+                    <span className="font-body text-xs font-black uppercase tracking-[0.18em] text-navy">
+                        ✦ CAMPUS FAIR 2027 ✦
+                    </span>
+                </div>
+
                 <p className="font-body text-sm font-bold uppercase tracking-[0.2em] text-lime">
                     READY?
                 </p>
@@ -25,16 +61,11 @@ export function RegistrationCta() {
 
                 <Link
                     href="/register"
-                    className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[0px_6px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_4px_0_#0B1F3A]"
+                    className="mt-6 inline-flex rounded-lg border-2 border-navy bg-lime px-7 py-3.5 font-body font-bold text-navy shadow-[0px_6px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-y-0.5 hover:shadow-[0px_4px_0_#0B1F3A]"
                 >
-                    Daftar Sekarang
+                    Daftar Sekarang →
                 </Link>
             </div>
-
-            {/* Temporary decorative shapes */}
-            <div className="absolute -left-20 top-16 hidden h-64 w-64 rounded-full border-[5px] border-lime/80 lg:block" />
-
-            <div className="absolute -right-24 bottom-0 hidden h-72 w-72 rotate-12 bg-pink lg:block rounded-xl border-4 border-yellow" />
         </section>
     );
 }
