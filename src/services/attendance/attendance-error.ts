@@ -3,7 +3,9 @@ export type AttendanceErrorCode =
     | "EVENT_NOT_STARTED"
     | "EVENT_FINISHED"
     | "QR_NOT_FOUND"
-    | "ALREADY_CHECKED_OUT";
+    | "ALREADY_CHECKED_IN"
+    | "ALREADY_CHECKED_OUT"
+    | "NOT_CHECKED_IN";
 
 export class AttendanceError extends Error {
     constructor(

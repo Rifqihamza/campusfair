@@ -8,6 +8,7 @@ import { APP_TIMEZONE } from "@/lib/utils/date";
 
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminHero } from "@/components/admin/admin-hero";
+import { ManualAttendance } from "@/components/admin/manual-attendance";
 
 type Props = {
     params: Promise<{
@@ -108,6 +109,10 @@ export default async function AttendancePage({ params }: Props) {
                     />
                 </div>
 
+                <div className="mt-4">
+                    <ManualAttendance eventId={eventId} />
+                </div>
+
                 <div className="mt-8">
                     <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -142,7 +147,7 @@ export default async function AttendancePage({ params }: Props) {
                             <thead>
                                 <tr className="border-b-2 border-navy bg-navy text-left text-cream">
                                     <th className="p-4 font-body text-xs font-bold uppercase tracking-wide">
-                                        User ID
+                                        Email
                                     </th>
                                     <th className="p-4 font-body text-xs font-bold uppercase tracking-wide">
                                         Nama
@@ -214,7 +219,7 @@ export default async function AttendancePage({ params }: Props) {
                                                 className="border-b border-navy/20 last:border-b-0"
                                             >
                                                 <td className="p-4 font-body text-sm font-bold text-navy">
-                                                    {item.participant.userId}
+                                                    {item.participant.user.email}
                                                 </td>
                                                 <td className="p-4 font-body text-sm font-bold text-navy">
                                                     {item.participant.name}

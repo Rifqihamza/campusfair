@@ -5,10 +5,12 @@ import { ParticipantHero } from "@/components/participant/participant-hero";
 import { Breadcrumbs } from "@/components/shared/breadcrumbs";
 import { formatDate, formatTime } from "@/lib/utils/format-date";
 import { getEvents } from "@/services/participant/get-events";
+import { ArrowRight } from "lucide-react";
+
 export const dynamic = "force-dynamic"
+
 export default async function EventsPage() {
     const events = await getEvents();
-
     return (
         <main className="relative min-h-dvh overflow-hidden bg-campus-blue px-4">
             {/* =====================================================
@@ -106,9 +108,9 @@ export default async function EventsPage() {
                                         {/* Action */}
                                         <Link
                                             href={`/events/${event.id}`}
-                                            className="mt-5 inline-flex items-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
+                                            className="mt-5 flex justify-center items-center gap-2 rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                         >
-                                            Lihat Detail & Daftar →
+                                            Detail & Daftar Event <ArrowRight size={24} />
                                         </Link>
                                     </div>
 

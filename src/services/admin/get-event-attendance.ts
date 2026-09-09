@@ -29,7 +29,15 @@ export async function getAdminEventAttendance(eventId: string) {
                     },
                 },
                 include: {
-                    participant: true,
+                    participant: {
+                        include: {
+                            user: {
+                                select: {
+                                    email: true
+                                }
+                            }
+                        }
+                    },
                     attendanceLogs: {
                         orderBy: {
                             scannedAt: "asc",

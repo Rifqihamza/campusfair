@@ -10,8 +10,12 @@ export function useEventRegistration(eventId: string) {
     const [error, setError] = useState("");
 
     async function register() {
+        if (loading) return;
+
         setLoading(true);
         setError("");
+
+        const startedAt = Date.now();
 
         try {
             const response = await fetch("/api/events/register", {
@@ -30,13 +34,26 @@ export function useEventRegistration(eventId: string) {
                 setError(
                     result.message ?? "Gagal mendaftar event.",
                 );
+                setLoading(false);
                 return;
+            }
+
+            // Pastikan loading overlay sempat terlihat.
+            const elapsed = Date.now() - startedAt;
+            const minimumLoadingTime = 400;
+
+            if (elapsed < minimumLoadingTime) {
+                await new Promise((resolve) =>
+                    setTimeout(
+                        resolve,
+                        minimumLoadingTime - elapsed,
+                    ),
+                );
             }
 
             router.push(`/events/${eventId}/ticket`);
         } catch {
             setError("Terjadi kesalahan. Silakan coba lagi.");
-        } finally {
             setLoading(false);
         }
     }

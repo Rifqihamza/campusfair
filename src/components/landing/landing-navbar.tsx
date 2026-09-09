@@ -35,7 +35,7 @@ export function LandingNavbar() {
                 className={[
                     "mx-auto transition-all duration-500",
                     scrolled
-                        ? "px-4 py-3 md:w-7xl md:px-6 md:py-4"
+                        ? "px-4 py-3 md:w-full lg:w-5xl xl:w-7xl md:px-6 md:py-4"
                         : "px-4 py-2 md:w-full md:px-6 md:py-2",
                 ].join(" ")}
             >
@@ -58,14 +58,14 @@ export function LandingNavbar() {
                         <Image
                             src="/cf-banner.png"
                             alt="Banner Campus Fair 2027"
-                            width={scrolled ? 100 : 150}
-                            height={scrolled ? 100 : 150}
-                            className={`h-auto w-35 md:w-full ${scrolled ? 'transition-all duration-500' : 'transtision-all duration-500'}`}
+                            width={150}
+                            height={150}
+                            className={`h-auto w-35 md:w-45 lg:w-full ${scrolled ? 'transition-all duration-500' : 'transtision-all duration-500'}`}
                         />
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden items-center gap-8 md:flex">
+                    <nav className="hidden items-center gap-8 md:hidden lg:flex">
                         <a
                             href="#hero"
                             className={[
@@ -120,7 +120,7 @@ export function LandingNavbar() {
                     </nav>
 
                     {/* Desktop Actions */}
-                    <div className="hidden items-center gap-4 pr-5 md:flex">
+                    <div className="hidden items-center gap-4 pr-5 md:hidden lg:flex ">
                         <Link
                             href="/login"
                             className="rounded-lg bg-pink px-5 py-2.5 font-body text-sm font-bold text-cream transition-all duration-300 hover:bg-navy hover:text-cream"
@@ -143,10 +143,10 @@ export function LandingNavbar() {
                         aria-expanded={menuOpen}
                         onClick={() => setMenuOpen((prev) => !prev)}
                         className={[
-                            "flex h-10 w-10 items-center justify-center rounded-lg md:hidden",
+                            "flex h-10 w-10 items-center justify-center rounded-lg md:flex lg:hidden",
                             "transition-colors duration-300",
                             scrolled
-                                ? "text-white hover:bg-navy/5"
+                                ? "text-navy hover:bg-lime/50 bg-lime"
                                 : "text-white hover:bg-white/10",
                         ].join(" ")}
                     >
@@ -157,7 +157,7 @@ export function LandingNavbar() {
                     <div
                         className={[
                             "absolute inset-x-0 top-full mt-2 overflow-hidden rounded-xl",
-                            "bg-cream shadow-xl md:hidden",
+                            "bg-cream shadow-xl lg:hidden",
                             "transition-all duration-300",
                             menuOpen
                                 ? "visible max-h-105 translate-y-0 opacity-100"

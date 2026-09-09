@@ -17,8 +17,9 @@ export function LogoutButton({ className }: BtnPropsLogout) {
         <button
             type="button"
             onClick={handleLogout}
-            className={`${className} rounded-lg border p-3 text-sm font-medium transition hover:bg-gray-100 cursor-pointer`}
+            className={`${className} flex flex-row items-center justify-between gap-2 text-sm rounded-lg border p-3 font-semibold uppercase tracking-wider transition hover:bg-gray-100 cursor-pointer`}
         >
+            Logout
             <LogOutIcon size={18} />
         </button>
     );

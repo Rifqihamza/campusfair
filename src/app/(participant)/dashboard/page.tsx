@@ -107,7 +107,7 @@ export default async function DashboardPage() {
                                             <h3 className="mt-1 font-display text-5xl leading-none text-navy">
                                                 {registration.event.name}
                                             </h3>
-                                            <p className="mt-2 font-medium text-lg leading-5 text-navy/70">
+                                            <p className="mt-2 font-medium text-md leading-5 text-navy/70 max-w-4xl">
                                                 {registration.event.description}
                                             </p>
 
@@ -138,18 +138,18 @@ export default async function DashboardPage() {
                                         <div className="flex w-full flex-col gap-4 sm:w-auto">
                                             <Link
                                                 href={`/events/${registration.event.id}/ticket`}
-                                                className="inline-flex items-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
+                                                className="flex flex-row items-center justify-between gap-2 w-full rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                             >
                                                 Lihat Tiket QR
-                                                <ArrowRight size={14} className="ml-2" />
+                                                <ArrowRight size={14} />
                                             </Link>
 
                                             <Link
                                                 href={`/events/${registration.event.id}`}
-                                                className="inline-flex items-center rounded-lg border-2 border-navy bg-white px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
+                                                className="flex flex-row items-center justify-between gap-2 w-full rounded-lg border-2 border-navy bg-white px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                             >
                                                 Lihat Detail
-                                                <ArrowRight size={14} className="ml-2" />
+                                                <ArrowRight size={14} />
                                             </Link>
                                         </div>
                                     </div>

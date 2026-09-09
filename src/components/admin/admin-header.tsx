@@ -36,7 +36,7 @@ export function AdminHeader() {
                     </span>
 
                     <LogoutButton
-                        className="border-none bg-transparent pr-2 font-body text-[16px] font-bold text-white transition-colors duration-300 hover:bg-transparent hover:text-lime"
+                        className="border-none bg-red-500 px-4 py-3 font-body font-bold text-white transition-colors duration-300 hover:bg-red-400 hover:text-white"
                     />
                 </div>
             </div>

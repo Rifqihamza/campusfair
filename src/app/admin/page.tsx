@@ -8,7 +8,7 @@ import { getAdminDashboardData } from "@/services/admin/get-dashboard-data";
 
 import { RegistrationChart } from "@/components/admin/registration-chart";
 import { AttendanceChart } from "@/components/admin/attendance-chart";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Edit } from "lucide-react";
 
 import { AdminHeader } from "@/components/admin/admin-header";
 import { AdminHero } from "@/components/admin/admin-hero";
@@ -248,20 +248,21 @@ export default async function AdminPage() {
                                                 </p>
                                             </div>
 
-                                            <div className="flex flex-wrap gap-3">
+                                            <div className="flex flex-col justify-center gap-3">
                                                 <Link
                                                     href={`/admin/attendance/${event.id}`}
-                                                    className="inline-flex items-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
+                                                    className="flex justify-between gap-2 items-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                                 >
                                                     Attendance
-                                                    <ArrowRight size={14} className="ml-2" />
+                                                    <ArrowRight size={16} className="" />
                                                 </Link>
 
                                                 <Link
                                                     href={`/admin/events/${event.id}/edit`}
-                                                    className="inline-flex items-center rounded-lg border-2 border-navy bg-white px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
+                                                    className="flex justify-between gap-2 items-center rounded-lg border-2 border-navy bg-white px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
                                                 >
                                                     Edit Event
+                                                    <Edit size={14} className="" />
                                                 </Link>
                                             </div>
                                         </div>

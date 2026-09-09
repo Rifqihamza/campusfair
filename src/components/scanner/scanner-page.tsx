@@ -1,7 +1,8 @@
 "use client";
 
-import { useAttendanceScan } from "@/hooks/scanner/use-attendance-scan";
+import { ArrowRight, Check } from "lucide-react";
 import { QrScanner } from "@/components/scanner/qr-scanner";
+import { useAttendanceScan } from "@/hooks/scanner/use-attendance-scan";
 
 type ScannerPageProps = {
     eventName: string;
@@ -20,207 +21,305 @@ export function ScannerPage({
     } = useAttendanceScan(scannerToken);
 
     const isCheckIn =
-        result?.success &&
-        result.data?.type === "CHECK_IN";
+        result?.success && result.data?.type === "CHECK_IN";
 
     const isCheckOut =
-        result?.success &&
-        result.data?.type === "CHECK_OUT";
+        result?.success && result.data?.type === "CHECK_OUT";
 
     return (
-        <main className="min-h-screen bg-cream px-4 py-6 sm:px-6 sm:py-10">
-            <div className="mx-auto w-full max-w-lg">
+        <main className="relative min-h-dvh md:max-h-dvh overflow-hidden p-4 sm:p-6 lg:flex lg:items-center lg:justify-center lg:p-8">
+            {/* Texture Background */}
+            <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-dvh bg-[url('/texture-background.jpg')] bg-repeat bg-size-[480px_auto] mix-blend-color-burn"
+            />
 
-                {/* Header */}
-                <section className="relative overflow-hidden rounded-3xl bg-campus-blue p-6 text-white shadow-[6px_6px_0_#B7FF2A] sm:p-8">
-                    <div className="relative z-10">
-                        <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
-                            CAMPUS FAIR 2027
-                        </p>
+            {/* Mobile top decorations */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-40 overflow-hidden sm:h-50">
+                <div className="absolute -right-10 -top-14 h-32 w-32 rounded-full border-8 border-pink/80" />
+                <div className="absolute right-7 top-24 h-3 w-3 rounded-full bg-lime" />
+                <div className="absolute left-0 top-34 h-1 w-24 -rotate-6 bg-pink" />
 
-                        <h1 className="mt-3 font-display text-5xl leading-[0.82] tracking-tight sm:text-6xl">
-                            SCAN
-                            <br />
-                            HERE.
-                        </h1>
-
-                        <div className="mt-5">
-                            <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-white/50">
-                                EVENT
-                            </p>
-
-                            <p className="mt-1 font-heading text-lg font-bold text-white sm:text-xl">
-                                {eventName}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Decorative */}
-                    <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-lime" />
-
-                    <div className="absolute -bottom-16 right-16 h-32 w-32 rotate-12 rounded-3xl bg-sky/30" />
-                </section>
-
-                {/* Scanner */}
-                <section className="mt-8 rounded-3xl border-2 border-navy bg-white p-4 shadow-[6px_6px_0_#0B1F3A] sm:p-5">
-                    <div className="mb-4 px-1">
-                        <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-campus-blue">
-                            ATTENDANCE SCANNER
-                        </p>
-
-                        <h2 className="mt-1 font-heading text-xl font-bold text-navy">
-                            Scan QR Peserta
-                        </h2>
-
-                        <p className="mt-1 font-body text-sm leading-5 text-navy/50">
-                            Arahkan kamera ke QR code
-                            peserta untuk melakukan
-                            check-in atau check-out.
-                        </p>
-                    </div>
-
-                    <div className="overflow-hidden rounded-2xl border-2 border-navy bg-navy p-2">
-                        <QrScanner
-                            onScan={handleScan}
-                            disabled={isProcessing}
+                <div className="absolute right-10 top-27 grid grid-cols-3 gap-1.5">
+                    {Array.from({ length: 9 }).map((_, index) => (
+                        <span
+                            key={index}
+                            className="h-1.5 w-1.5 rounded-full bg-white/50"
                         />
-                    </div>
-
-                    {isProcessing && !result && (
-                        <div className="mt-4 flex items-center justify-center rounded-xl bg-sky px-4 py-3">
-                            <p className="font-body text-sm font-bold text-navy">
-                                Memproses QR...
-                            </p>
-                        </div>
-                    )}
-
-                    {!isProcessing && !result && (
-                        <div className="mt-4 rounded-xl bg-sky px-4 py-3 text-center">
-                            <p className="font-body text-xs font-semibold text-navy/60">
-                                Scanner siap digunakan
-                            </p>
-                        </div>
-                    )}
-                </section>
-
-                {/* Footer hint */}
-                <p className="mt-6 text-center font-body text-xs leading-5 text-navy/40">
-                    Pastikan QR code terlihat jelas
-                    dan berada di dalam area kamera.
-                </p>
+                    ))}
+                </div>
             </div>
 
-            {/* Result Modal */}
-            {result && (
-                <div className="fixed inset-0 z-99999 flex items-center justify-center bg-navy/80 p-4 backdrop-blur-sm">
-                    <section className="w-full max-w-md overflow-hidden rounded-3xl border-2 border-navy bg-cream shadow-[8px_8px_0_#B7FF2A]">
+            <div className="pointer-events-none absolute inset-x-0 bottom-20 z-10 h-100 overflow-hidden md:h-full md:bottom-0">
+                <div className="absolute -bottom-10 -left-16 h-40 w-40 md:h-60 md:w-60 rounded-full border-10 border-lime/70" />
 
+                <div className="absolute bottom-14 right-5 h-7 w-18 -rotate-6 bg-pink" />
+
+                <div className="absolute bottom-7 right-22 h-4 w-4 rounded-full bg-navy" />
+
+                <div className="absolute bottom-24 right-7 -rotate-12">
+                    <span className="block h-1 w-10 rounded-full bg-white/70" />
+                    <span className="ml-3 mt-2 block h-1 w-7 rounded-full bg-white/50" />
+                </div>
+
+                <div className="absolute bottom-7 left-1/4 flex gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-lime" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-lime" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-lime" />
+                </div>
+            </div>
+
+            {/* Main Scanner Container */}
+            <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-6xl">
+                <section className="overflow-hidden rounded-3xl border-2 border-lime bg-navy/60 shadow-[0px_6px_0_#b8f23d] backdrop-blur-xs lg:grid lg:grid-cols-[0.85fr_1.15fr]">
+                    {/* Scanner Information */}
+                    <div className="p-5 sm:p-7 lg:flex lg:flex-col lg:justify-start lg:p-16">
+                        <div className="flex flex-col gap-3">
+                            <div>
+                                <p className="font-body text-xs font-black uppercase tracking-[0.18em] text-sky">
+                                    ATTENDANCE SCANNER
+                                </p>
+
+                                <h1 className="mt-2 font-display text-4xl uppercase leading-[0.85] text-lime sm:text-5xl lg:text-6xl">
+                                    Scan QR Peserta
+                                </h1>
+                            </div>
+
+                            <div className="w-fit max-w-full rounded-md border-2 border-lime bg-lime px-3 py-1.5">
+                                <p className="truncate font-body text-sm font-black text-navy">
+                                    {eventName}
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="mt-4 max-w-xl font-body text-sm font-semibold leading-5 text-sky lg:text-base lg:leading-6">
+                            Arahkan kamera ke QR Code peserta untuk
+                            mencatat check-in atau check-out secara
+                            otomatis.
+                        </p>
+
+                        {/* Desktop Operational Info */}
+                        <div className="mt-7 hidden border-l-4 border-lime pl-4 lg:block">
+                            <p className="font-body text-xs font-black uppercase tracking-[0.15em] text-lime">
+                                CARA MENGGUNAKAN
+                            </p>
+
+                            <p className="mt-2 max-w-sm font-body text-sm font-semibold leading-5 text-cream">
+                                Minta peserta menampilkan QR Code
+                                tiketnya di depan kamera laptop atau
+                                webcam.
+                            </p>
+
+                            <p className="mt-2 max-w-sm font-body text-sm font-semibold leading-5 text-sky">
+                                Scan pertama mencatat check-in.
+                                Scan berikutnya mencatat check-out.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Scanner Camera */}
+                    <div className="border-t-2 border-dashed border-lime p-5 lg:border-l-2 lg:border-t-0 lg:px-7 pt-7">
+                        <div className="relative overflow-hidden rounded-xl border-2 border-lime pb-6">
+                            <QrScanner
+                                onScan={handleScan}
+                                disabled={isProcessing}
+                            />
+
+                            {/* Scanner Status Overlay */}
+                            {isProcessing && !result ? (
+                                <div className="mt-4 absolute inset-x-0 bottom-0 bg-navy/85 py-4">
+                                    <p className="text-center font-body text-sm font-black uppercase tracking-wide text-lime">
+                                        Memproses QR...
+                                    </p>
+
+                                    <p className="mt-1 px-4 text-center font-body text-xs font-semibold leading-5 text-cream">
+                                        Tunggu sebentar, data kehadiran
+                                        sedang dicatat.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="mt-4 absolute inset-x-0 bottom-0 bg-navy/85 py-4">
+                                    <p className="text-center font-body text-sm font-black uppercase tracking-wide text-lime">
+                                        Scanner Siap Digunakan
+                                    </p>
+
+                                    <p className="mt-1 px-4 text-center font-body text-xs font-semibold leading-5 text-cream">
+                                        Arahkan QR peserta ke kamera.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Camera Instruction */}
+                        <div className="px-1 py-4">
+                            <p className="text-center font-body text-md font-semibold leading-5 text-sky ">
+                                Pastikan QR Code terlihat jelas, tidak
+                                terpotong, dan berada di dalam area kamera.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Mobile Operational Info */}
+                    <div className="px-5 pb-5 sm:px-7 lg:hidden">
+                        <div className="border-l-4 border-lime pl-3">
+                            <p className="font-body text-xs font-black uppercase tracking-[0.15em] text-lime">
+                                CARA MENGGUNAKAN
+                            </p>
+
+                            <p className="mt-1 font-body text-xs font-semibold leading-5 text-cream">
+                                Arahkan QR peserta ke kamera. Scan pertama
+                                mencatat check-in, scan berikutnya
+                                mencatat check-out.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            {/* Attendance Result Modal */}
+            {result && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-navy/80 px-4 py-5">
+                    <section className="my-auto w-full max-w-md overflow-hidden rounded-2xl border-2 border-navy bg-navy shadow-[0px_8px_0_#b8f23d]">
                         {/* Modal Header */}
                         <div
-                            className={[
-                                "px-6 py-4 text-center",
+                            className={
                                 result.success
-                                    ? "bg-campus-blue"
-                                    : "bg-navy",
-                            ].join(" ")}
+                                    ? "border-b-2 border-lime bg-navy p-4"
+                                    : "border-b-2 border-navy bg-sky p-4"
+                            }
                         >
-                            <p className="font-body text-xs font-bold uppercase tracking-[0.2em] text-lime">
+                            <p
+                                className={
+                                    result.success
+                                        ? "inline-flex rounded-md bg-lime px-3 py-1 font-body text-xs font-black uppercase tracking-[0.16em] text-navy"
+                                        : "inline-flex rounded-md bg-navy px-3 py-1 font-body text-xs font-black uppercase tracking-[0.16em] text-lime"
+                                }
+                            >
                                 {result.success
                                     ? "ATTENDANCE"
                                     : "SCAN ERROR"}
                             </p>
                         </div>
 
-                        <div className="p-6 text-center sm:p-8">
+                        {/* Modal Content */}
+                        <div className="p-4 sm:p-5">
+                            {/* Result Summary */}
+                            <div className="flex items-start gap-3 sm:gap-4">
+                                <div
+                                    className={
+                                        result.success
+                                            ? "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-navy bg-lime text-navy"
+                                            : "flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-navy bg-navy text-lime"
+                                    }
+                                >
+                                    {result.success ? (
+                                        <Check
+                                            className="h-7 w-7"
+                                            strokeWidth={3}
+                                        />
+                                    ) : (
+                                        <span className="font-display text-3xl leading-none">
+                                            ×
+                                        </span>
+                                    )}
+                                </div>
 
-                            {/* Icon */}
-                            <div
-                                className={[
-                                    "mx-auto flex h-20 w-20 items-center justify-center rounded-full border-2 border-navy text-5xl font-bold",
-                                    result.success
-                                        ? "bg-lime text-navy"
-                                        : "bg-red-100 text-red-600",
-                                ].join(" ")}
-                            >
-                                {result.success
-                                    ? isCheckIn
-                                        ? "✓"
-                                        : isCheckOut
-                                            ? "↗"
-                                            : "✓"
-                                    : "✕"}
+                                <div className="min-w-0 flex-1">
+                                    <h2
+                                        className={
+                                            result.success
+                                                ? "font-display text-3xl uppercase leading-none text-lime"
+                                                : "font-display text-3xl uppercase leading-none text-sky"
+                                        }
+                                    >
+                                        {isCheckIn
+                                            ? "CHECK-IN"
+                                            : isCheckOut
+                                                ? "CHECK-OUT"
+                                                : "SCAN GAGAL"}
+                                    </h2>
+
+                                    {result.success ? (
+                                        <p className="mt-1 font-body text-sm font-black text-sky">
+                                            Berhasil dicatat
+                                        </p>
+                                    ) : (
+                                        <p className="mt-1 font-body text-sm font-black text-sky">
+                                            Kehadiran tidak dicatat
+                                        </p>
+                                    )}
+
+                                    <p
+                                        className={
+                                            result.success
+                                                ? "mt-2 font-body text-sm font-semibold leading-5 text-sky/80"
+                                                : "mt-2 font-body text-sm font-semibold leading-5 text-sky"
+                                        }
+                                    >
+                                        {result.message}
+                                    </p>
+                                </div>
                             </div>
 
-                            {/* Title */}
-                            <h2 className="mt-6 font-display text-4xl leading-none text-navy sm:text-5xl">
-                                {result.success
-                                    ? isCheckIn
-                                        ? "CHECK-IN"
-                                        : isCheckOut
-                                            ? "CHECK-OUT"
-                                            : "BERHASIL"
-                                    : "SCAN GAGAL"}
-                            </h2>
-
-                            {result.success && (
-                                <p className="mt-2 font-body text-sm font-bold uppercase tracking-wider text-campus-blue">
-                                    Berhasil
-                                </p>
-                            )}
-
-                            {/* Message */}
-                            <p className="mt-4 font-body text-sm leading-6 text-navy/60">
-                                {result.message}
-                            </p>
-
-                            {/* Participant */}
-                            {result.success &&
-                                result.data && (
-                                    <div className="mt-6 rounded-2xl border-2 border-navy bg-white p-5">
-                                        <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-navy/40">
+                            {/* Participant Information */}
+                            {result.success && result.data && (
+                                <div className="mt-5 rounded-xl border-2 border-navy bg-sky p-4 sm:p-5">
+                                    <div>
+                                        <p className="font-body text-[11px] font-black uppercase tracking-[0.14em] text-navy/80">
                                             PESERTA
                                         </p>
 
-                                        <p className="mt-2 font-heading text-xl font-bold text-navy">
-                                            {
-                                                result
-                                                    .data
-                                                    .participant
-                                                    .name
-                                            }
+                                        <p className="mt-1 wrap-break-word font-body text-lg font-black text-navy">
+                                            {result.data.participant.name}
+                                        </p>
+                                    </div>
+
+                                    <div className="mt-4 border-t-2 border-dashed border-navy/40 pt-4">
+                                        <p className="font-body text-[11px] font-black uppercase tracking-[0.14em] text-navy/80">
+                                            KODE PESERTA
                                         </p>
 
-                                        <div className="mt-3 inline-flex rounded-lg bg-sky px-3 py-1.5">
-                                            <p className="font-mono text-sm font-bold text-navy">
-                                                {
-                                                    result
-                                                        .data
-                                                        .participant
-                                                        .participantCode
-                                                }
-                                            </p>
-                                        </div>
+                                        <p className="mt-1 wrap-break-word font-body text-base font-black text-navy">
+                                            {
+                                                result.data.participant
+                                                    .participantCode
+                                            }
+                                        </p>
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                            {/* Instruction */}
-                            <p className="mt-6 font-body text-xs text-navy/40">
-                                Scanner akan siap kembali
-                                dalam beberapa detik...
+                            {/* Operational Message */}
+                            <p className="mt-4 text-center font-body text-xs font-semibold leading-5 text-sky">
+                                {result.success
+                                    ? "Scanner akan siap kembali dalam beberapa detik."
+                                    : "Periksa QR peserta atau status kehadirannya, lalu coba scan kembali."}
                             </p>
 
-                            {/* Manual close */}
+                            {/* Scan Again */}
                             <button
                                 type="button"
                                 onClick={resetResult}
-                                className="mt-4 w-full rounded-xl border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[4px_4px_0_#0B1F3A] transition-[transform,box-shadow] duration-200 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#0B1F3A]"
+                                className={
+                                    result.success
+                                        ? "mt-5 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-navy bg-lime px-4 py-3 font-body text-sm font-black uppercase tracking-wide text-navy transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                                        : "mt-5 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-navy bg-sky px-4 py-3 font-body text-sm font-black uppercase tracking-wide text-navy transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                                }
                             >
-                                Scan Lagi →
+                                SCAN LAGI
+
+                                <ArrowRight
+                                    className="h-4 w-4"
+                                    strokeWidth={3}
+                                />
                             </button>
                         </div>
                     </section>
                 </div>
             )}
+
+            {/* Bottom Gradient Decoration */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-64 bg-linear-to-b from-transparent via-sky/50 to-lime" />
         </main>
     );
 }

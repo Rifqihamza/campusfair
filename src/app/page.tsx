@@ -5,30 +5,22 @@ import { HighlightsSection } from "@/components/landing/highlights-section";
 import { EventInfoSection } from "@/components/landing/event-info";
 import { RegistrationCta } from "@/components/landing/registration-cta";
 import { LandingFooter } from "@/components/landing/landing-footer";
-import Image from "next/image";
+
 export default function HomePage() {
   return (
-    <main className="relative overflow-hidden min-h-screen">
-      {/* Texture */}
-      <Image
-        src="/texture-background.jpg"
-        alt="Texture Background"
-        width={1920}
-        height={1080}
-        className="absolute inset-0 w-full h-auto mix-blend-color-burn -z-10"
-      />
+    <main className="relative min-h-dvh overflow-hidden">
+      {/* Texture Background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-dvh bg-[url('/texture-background.jpg')] bg-repeat bg-size-[480px_auto] mix-blend-color-burn"      >
+      </div>
+
       <LandingNavbar />
-
       <Hero />
-
       <AboutSection />
-
       <HighlightsSection />
-
       <EventInfoSection />
-
       <RegistrationCta />
-
       <LandingFooter />
     </main>
   );

@@ -2,16 +2,15 @@ import {
     Prisma,
     type AttendanceType,
 } from "../../../prisma/generated/client";
-
 import { prisma } from "@/lib/db/prisma";
-
 import { AttendanceError } from "./attendance-error";
 
 const MAX_TRANSACTION_RETRIES = 3;
 
-export async function processAttendance(
-    scannerToken: string,
-    qrToken: string,
+export async function processManualAttendance(
+    eventId: string,
+    eventParticipantId: string,
+    type: AttendanceType,
 ) {
     for (
         let attempt = 1;
@@ -21,14 +20,13 @@ export async function processAttendance(
         try {
             return await prisma.$transaction(
                 async (tx) => {
-                    const event =
-                        await tx.event.findFirst({
-                            where: {
-                                scannerToken,
-                                isActive: true,
-                                deletedAt: null,
-                            },
-                        });
+                    const event = await tx.event.findFirst({
+                        where: {
+                            id: eventId,
+                            isActive: true,
+                            deletedAt: null,
+                        },
+                    });
 
                     if (!event) {
                         throw new AttendanceError(
@@ -51,21 +49,19 @@ export async function processAttendance(
                     }
 
                     const eventParticipant =
-                        await tx.eventParticipant.findFirst(
-                            {
-                                where: {
-                                    eventId: event.id,
-                                    qrToken,
+                        await tx.eventParticipant.findFirst({
+                            where: {
+                                id: eventParticipantId,
+                                eventId: event.id,
+                                deletedAt: null,
+                                participant: {
                                     deletedAt: null,
-                                    participant: {
-                                        deletedAt: null,
-                                    },
-                                },
-                                include: {
-                                    participant: true,
                                 },
                             },
-                        );
+                            include: {
+                                participant: true,
+                            },
+                        });
 
                     if (!eventParticipant) {
                         throw new AttendanceError(
@@ -73,34 +69,38 @@ export async function processAttendance(
                         );
                     }
 
-                    const checkIn =
+                    const existingAttendance =
                         await tx.attendanceLog.findFirst({
                             where: {
                                 eventParticipantId:
                                     eventParticipant.id,
-                                type: "CHECK_IN",
+                                type,
                             },
                         });
 
-                    const checkOut =
-                        await tx.attendanceLog.findFirst({
-                            where: {
-                                eventParticipantId:
-                                    eventParticipant.id,
-                                type: "CHECK_OUT",
-                            },
-                        });
-
-                    let attendanceType: AttendanceType;
-
-                    if (!checkIn) {
-                        attendanceType = "CHECK_IN";
-                    } else if (!checkOut) {
-                        attendanceType = "CHECK_OUT";
-                    } else {
+                    if (existingAttendance) {
                         throw new AttendanceError(
-                            "ALREADY_CHECKED_OUT",
+                            type === "CHECK_IN"
+                                ? "ALREADY_CHECKED_IN"
+                                : "ALREADY_CHECKED_OUT",
                         );
+                    }
+
+                    if (type === "CHECK_OUT") {
+                        const checkIn =
+                            await tx.attendanceLog.findFirst({
+                                where: {
+                                    eventParticipantId:
+                                        eventParticipant.id,
+                                    type: "CHECK_IN",
+                                },
+                            });
+
+                        if (!checkIn) {
+                            throw new AttendanceError(
+                                "NOT_CHECKED_IN",
+                            );
+                        }
                     }
 
                     const attendance =
@@ -108,15 +108,14 @@ export async function processAttendance(
                             data: {
                                 eventParticipantId:
                                     eventParticipant.id,
-                                type: attendanceType,
+                                type,
                             },
                         });
 
                     return {
                         attendance,
                         participant: {
-                            name: eventParticipant
-                                .participant.name,
+                            name: eventParticipant.participant.name,
                             participantCode:
                                 eventParticipant.participantCode,
                         },

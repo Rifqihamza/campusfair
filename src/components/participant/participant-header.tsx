@@ -57,7 +57,7 @@ export function ParticipantHeader({
                             Event
                         </Link>
                         <LogoutButton
-                            className="border-none bg-red-500 px-4 py-3 font-body text-[14px] font-bold text-white transition-colors duration-300 hover:bg-red-400 hover:text-white"
+                            className="border-none bg-red-500 px-4 py-3 font-body font-bold text-white transition-colors duration-300 hover:bg-red-400 hover:text-white"
                         />
                     </nav>
 

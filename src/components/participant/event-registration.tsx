@@ -1,5 +1,6 @@
 "use client";
 
+import { LoadingOverlay } from "@/components/shared/loading-overlay";
 import { useEventRegistration } from "@/hooks/participant/use-event-registration";
 
 type EventRegistrationProps = {
@@ -11,44 +12,46 @@ export function EventRegistration({
     eventId,
     eventName,
 }: EventRegistrationProps) {
-    const {
-        loading,
-        error,
-        register,
-    } = useEventRegistration(eventId);
+    const { loading, error, register } = useEventRegistration(eventId);
 
     return (
-        <section className="rounded-2xl text-center flex flex-col items-center justify-center border-2 border-navy bg-cream p-6 shadow-[6px_6px_0_#0B1F3A]">
-            <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-campus-blue">
-                READY TO JOIN?
-            </p>
+        <>
+            <LoadingOverlay
+                show={loading}
+                message="Mendaftarkan ke event..."
+            />
 
-            <h2 className="mt-2 font-heading text-3xl font-bold text-navy">
-                {eventName}
-            </h2>
+            <section className="flex flex-col items-center justify-center rounded-2xl border-2 border-navy bg-cream p-6 text-center shadow-[6px_6px_0_#0B1F3A]">
+                <p className="font-body text-xs font-bold uppercase tracking-[0.15em] text-campus-blue">
+                    READY TO JOIN?
+                </p>
 
-            <p className="mt-3 max-w-xl font-medium text-md leading-6 text-navy/80">
-                Kamu belum terdaftar sebagai peserta
-                event ini. <br /> Yuk, daftar sekarang dan
-                jadi bagian dari <b>{eventName}</b>.
-            </p>
+                <h2 className="mt-2 font-heading text-3xl font-bold text-navy">
+                    {eventName}
+                </h2>
 
-            {error && (
-                <div className="mt-5 rounded-xl border-2 border-red-700/20 bg-red-100 p-3 text-sm font-medium text-red-800">
-                    {error}
-                </div>
-            )}
+                <p className="mt-3 max-w-xl font-medium text-md leading-6 text-navy/80">
+                    Kamu belum terdaftar sebagai peserta event ini.
+                    <br />
+                    Yuk, daftar sekarang dan jadi bagian dari{" "}
+                    <b>{eventName}</b>.
+                </p>
 
-            <button
-                type="button"
-                onClick={register}
-                disabled={loading}
-                className="w-full mt-5 cursor-pointer inline-flex items-center justify-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A]"
-            >
-                {loading
-                    ? "Mendaftarkan..."
-                    : "Daftar ke Campus Fair →"}
-            </button>
-        </section>
+                {error && (
+                    <div className="mt-5 rounded-xl border-2 border-red-700/20 bg-red-100 p-3 text-sm font-medium text-red-800">
+                        {error}
+                    </div>
+                )}
+
+                <button
+                    type="button"
+                    onClick={register}
+                    disabled={loading}
+                    className="mt-5 inline-flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-navy bg-lime px-5 py-3 font-body text-sm font-bold text-navy shadow-[0px_4px_0_#0B1F3A] hover:translate-y-0.5 hover:shadow-[0px_2px_0_#0B1F3A] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    Daftar ke Campus Fair →
+                </button>
+            </section>
+        </>
     );
 }
