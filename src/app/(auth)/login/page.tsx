@@ -5,6 +5,8 @@ import Link from "next/link";
 
 import { LoginForm } from "@/components/auth/login-form";
 
+import { Floating } from "@/components/shared/floating";
+
 export default function LoginPage() {
     return (
         <main className="relative flex min-h-dvh items-center justify-center overflow-hidden px-4 pb-10 text-white">
@@ -19,43 +21,86 @@ export default function LoginPage() {
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-x-0 top-0 z-10 h-40 overflow-hidden sm:h-50"
             >
-                <div className="absolute -right-10 -top-14 h-32 w-32 rounded-full border-8 border-pink/80" />
+                <Floating
+                    duration={4}
+                    distance={8}
+                    className="absolute -right-10 -top-14 h-32 w-32 rounded-full border-8 border-pink/80"
+                />
 
-                <div className="absolute right-7 top-24 h-3 w-3 rounded-full bg-lime" />
+                <Floating
+                    duration={3.5}
+                    distance={6}
+                    delay={0.4}
+                    className="absolute right-7 top-24 h-3 w-3 rounded-full bg-lime"
+                />
 
-                <div className="absolute left-0 top-34 h-1 w-24 -rotate-6 bg-pink" />
+                <Floating
+                    duration={4.5}
+                    distance={7}
+                    delay={0.8}
+                    className="absolute left-0 top-34 h-1 w-24 -rotate-6 bg-pink"
+                />
 
-                <div className="absolute right-10 top-27 grid grid-cols-3 gap-1.5">
+                <Floating
+                    duration={4}
+                    distance={6}
+                    delay={0.6}
+                    className="absolute right-10 top-27 grid grid-cols-3 gap-1.5"
+                >
                     {Array.from({ length: 9 }).map((_, index) => (
                         <span
                             key={index}
                             className="h-1.5 w-1.5 rounded-full bg-white/50"
                         />
                     ))}
-                </div>
+                </Floating>
             </div>
 
             {/* Bottom decorations */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 bottom-40 z-10 h-100 overflow-hidden md:bottom-30 md:h-full"
+                className="pointer-events-none absolute inset-x-0 bottom-40 z-10 h-100 overflow-hidden md:bottom-0 md:h-full"
             >
-                <div className="absolute -bottom-10 -left-16 h-40 w-40 rounded-full border-10 border-lime/70 md:h-60 md:w-60" />
+                <Floating
+                    duration={5}
+                    distance={10}
+                    className="absolute -bottom-10 -left-16 h-40 w-40 rounded-full border-10 border-lime/70 md:h-60 md:w-60"
+                />
 
-                <div className="absolute bottom-14 right-5 h-7 w-18 -rotate-6 bg-pink" />
+                <Floating
+                    duration={3.8}
+                    distance={7}
+                    delay={0.6}
+                    className="absolute bottom-44 right-5 h-7 w-18 -rotate-6 bg-pink"
+                />
 
-                <div className="absolute bottom-7 right-22 h-4 w-4 rounded-full bg-navy" />
+                <Floating
+                    duration={4.2}
+                    distance={6}
+                    delay={1}
+                    className="absolute bottom-47 right-22 h-4 w-4 rounded-full bg-navy"
+                />
 
-                <div className="absolute bottom-24 right-7 -rotate-12">
+                <Floating
+                    duration={4.5}
+                    distance={8}
+                    delay={0.3}
+                    className="absolute bottom-54 right-7 -rotate-12"
+                >
                     <span className="block h-1 w-10 rounded-full bg-white/70" />
                     <span className="ml-3 mt-2 block h-1 w-7 rounded-full bg-white/50" />
-                </div>
+                </Floating>
 
-                <div className="absolute bottom-7 left-1/4 flex gap-1.5">
+                <Floating
+                    duration={3.5}
+                    distance={6}
+                    delay={1.2}
+                    className="absolute bottom-47 left-1/4 flex gap-1.5"
+                >
                     <span className="h-1.5 w-1.5 rounded-full bg-lime" />
                     <span className="h-1.5 w-1.5 rounded-full bg-lime" />
                     <span className="h-1.5 w-1.5 rounded-full bg-lime" />
-                </div>
+                </Floating>
             </div>
 
             {/* Main content */}

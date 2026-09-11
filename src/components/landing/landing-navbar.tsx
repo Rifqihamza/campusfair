@@ -66,8 +66,8 @@ export function LandingNavbar() {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden items-center gap-8 md:hidden lg:flex">
-                        <a
-                            href="#hero"
+                        <Link
+                            href="/"
                             className={[
                                 "font-body text-sm font-semibold",
                                 "transition-colors duration-300",
@@ -77,7 +77,7 @@ export function LandingNavbar() {
                             ].join(" ")}
                         >
                             Home
-                        </a>
+                        </Link>
 
                         <a
                             href="#about"
@@ -165,6 +165,13 @@ export function LandingNavbar() {
                         ].join(" ")}
                     >
                         <nav className="flex flex-col p-4">
+                            <Link
+                                href="/"
+                                onClick={closeMenu}
+                                className="rounded-lg px-4 py-3 font-body text-sm font-semibold text-navy transition-colors hover:bg-navy/5"
+                            >
+                                Home
+                            </Link>
                             <a
                                 href="#about"
                                 onClick={closeMenu}

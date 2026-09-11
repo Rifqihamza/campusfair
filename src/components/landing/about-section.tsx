@@ -1,7 +1,10 @@
 import DriftWall from "@/components/shared/driftwall";
 import Image from "next/image";
+
 import { campusLogo } from "@/data/campusLogo";
+
 import { Reveal } from "../shared/reveal";
+import { Floating } from "../shared/floating";
 
 export function AboutSection() {
     return (
@@ -17,11 +20,16 @@ export function AboutSection() {
                         {/* Heading */}
                         <div>
                             <div className="relative">
-                                <div className="mb-4 inline-flex -rotate-2 items-center gap-2 border-2 border-navy bg-lime px-3 py-1 shadow-[3px_3px_0_#0B1F3A]">
+                                <Floating
+                                    delay={2}
+                                    duration={4}
+                                    distance={7}
+                                    className="mb-4 inline-flex -rotate-2 items-center gap-2 border-2 border-navy bg-lime px-3 py-1 shadow-[3px_3px_0_#0B1F3A]"
+                                >
                                     <span className="font-body text-[10px] font-black uppercase tracking-[0.15em] text-navy">
                                         ✦ LET&apos;S TALK ✦
                                     </span>
-                                </div>
+                                </Floating>
 
                                 <p className="font-body text-sm font-bold uppercase tracking-[0.2em] text-campus-blue">
                                     CAMPUS FAIR ITU APA SIH?
@@ -35,11 +43,12 @@ export function AboutSection() {
                             </div>
                         </div>
 
-                        <div className="relative mt-5 w-full max-w-full -rotate-1 overflow-hidden border-3 border-navy bg-white p-1 shadow-[6px_6px_0_#0B1F3A] sm:border-4 sm:shadow-[-8px_8px_0_#0B1F3A]">                            <div className="absolute right-5 top-5 z-20 rotate-6 border-2 border-navy bg-pink px-3 py-2 shadow-[3px_3px_0_#0B1F3A]">
-                            <p className="font-body text-[10px] font-black uppercase tracking-wider text-navy">
-                                MEMORIES ✦
-                            </p>
-                        </div>
+                        <div className="relative mt-5 w-full max-w-full -rotate-1 overflow-hidden border-3 border-navy bg-white p-1 shadow-[6px_6px_0_#0B1F3A] sm:border-4 sm:shadow-[-8px_8px_0_#0B1F3A]">
+                            <div className="absolute right-5 top-5 z-20 rotate-6 border-2 border-navy bg-pink px-3 py-2 shadow-[3px_3px_0_#0B1F3A]">
+                                <p className="font-body text-[10px] font-black uppercase tracking-wider text-navy">
+                                    MEMORIES ✦
+                                </p>
+                            </div>
 
                             <Image
                                 src="/bersama.jpg"
@@ -56,7 +65,6 @@ export function AboutSection() {
 
                     {/* Description */}
                     <Reveal delay={120}>
-
                         <div className="max-w-3xl">
                             <p className="font-body text-lg leading-6 text-navy/70 md:text-xl">
                                 <b>Campus Fair</b> merupakan agenda tahunan
@@ -78,7 +86,7 @@ export function AboutSection() {
                                     Jadi, sudah siap menemukan pilihanmu?
                                 </p>
 
-                                <div className="absolute right-0 top-14 -rotate-12 border-2 border-navy bg-lime px-2 py-2.5 shadow-[4px_4px_0_#0B1F3A] sm:right-4 sm:top-10 sm:px-3 sm:py-3">
+                                <div className="absolute right-0 top-14 -rotate-6 border-2 border-navy bg-lime px-2 py-2.5 shadow-[4px_4px_0_#0B1F3A] sm:right-4 sm:top-10 sm:px-3 sm:py-3">
                                     <p className="whitespace-nowrap font-heading text-xs font-bold text-navy sm:text-sm md:text-lg">
                                         FIND YOUR NEXT STEP! ↗
                                     </p>
@@ -101,7 +109,7 @@ export function AboutSection() {
                     turn={-14}
                     perspective={1200}
                     depth={120}
-                    speed={42}
+                    speed={80}
                     direction="up"
                     variance={0.45}
                     parallax={0.10}
@@ -117,22 +125,40 @@ export function AboutSection() {
             </div>
 
             {/* Decorative shapes */}
-            <div className="pointer-events-none absolute right-2 top-24 z-10 h-8 w-8 rotate-12 rounded-full border-3 border-navy bg-lime sm:left-4 sm:h-10 sm:w-10 lg:left-[4%] lg:top-24" />
+            <Floating
+                duration={4}
+                distance={8}
+                className="pointer-events-none absolute right-2 top-24 z-10 h-8 w-8 rotate-12 rounded-full border-3 border-navy bg-lime sm:left-4 sm:h-10 sm:w-10 lg:left-[4%] lg:top-24"
+            />
 
-            <div className="pointer-events-none absolute right-3 top-[18%] z-10 rotate-12 font-heading text-3xl font-black text-campus-blue sm:right-6 sm:text-4xl lg:right-auto lg:left-[48%] lg:top-28">
+            <Floating
+                duration={3.5}
+                distance={7}
+                delay={0.4}
+                className="pointer-events-none absolute right-3 top-[18%] z-10 rotate-12 font-heading text-3xl font-black text-campus-blue sm:right-6 sm:text-4xl lg:right-auto lg:left-[48%] lg:top-28"
+            >
                 ✦
-            </div>
+            </Floating>
 
-            <div className="pointer-events-none absolute right-3 top-[42%] z-10 h-10 w-10 -rotate-12 rounded-full border-3 border-navy bg-pink sm:right-6 sm:h-12 sm:w-12 lg:right-[2%] lg:top-auto lg:bottom-52" />
+            <Floating
+                duration={4.5}
+                distance={8}
+                delay={0.8}
+                className="pointer-events-none absolute right-3 top-[42%] z-10 h-10 w-10 -rotate-12 rounded-full border-3 border-navy bg-pink sm:right-6 sm:h-12 sm:w-12 lg:right-[2%] lg:top-auto lg:bottom-52"
+            />
 
-            <div className="pointer-events-none absolute left-2 top-[58%] z-10 -rotate-12 font-heading text-4xl font-black text-pink sm:left-5 sm:text-5xl lg:left-[5%] lg:top-auto lg:bottom-[28%]">
+            <Floating
+                duration={3.8}
+                distance={9}
+                delay={1}
+                className="pointer-events-none absolute left-2 top-[58%] z-10 -rotate-12 font-heading text-4xl font-black text-pink sm:left-5 sm:text-5xl lg:left-[5%] lg:top-auto lg:bottom-[28%]"
+            >
                 ★
-            </div>
+            </Floating>
 
             {/* Bottom transition */}
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-64 bg-linear-to-b from-transparent via-cream to-sky" />
-
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-linear-to-b from-transparent to-sky" />
-        </section >
+        </section>
     );
 }

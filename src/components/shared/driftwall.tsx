@@ -662,10 +662,11 @@ const DriftWall = ({
                 <Image
                     src={item.image}
                     alt={item.title ?? ""}
-                    loading="lazy"
+                    loading="eager"
                     decoding="async"
                     draggable={false}
                     fill
+                    sizes="100%"
                     className="p-4 bg-white object-contain rounded-full"
                 />
 
